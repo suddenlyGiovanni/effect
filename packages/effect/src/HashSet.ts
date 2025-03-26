@@ -1,4 +1,160 @@
 /**
+ * A `HashSet` is a collection of unique values with efficient lookup, insertion
+ * and removal.
+ *
+ * ## Basic Usage
+ *
+ * HashSet solves the problem of maintaining an unsorted collection where each
+ * value appears exactly once, with fast operations for checking membership and
+ * adding/removing values.
+ *
+ * ### Value-Based Equality
+ *
+ * Unlike JavaScript's built-in {@link Set}, which checks for equality by
+ * reference, `HashSet` supports _value-based equality_ through the {@link Equal}
+ * interface. This allows objects with the same content to be treated as equal:
+ *
+ * ```ts
+ * import { HashSet, Data } from "effect"
+ *
+ * // Creating a HashSet with objects that implement the Equal interface
+ * const set = HashSet.empty().pipe(
+ *   HashSet.add(Data.struct({ name: "Alice", age: 30 })),
+ *   HashSet.add(Data.struct({ name: "Alice", age: 30 }))
+ * )
+ *
+ * // HashSet recognizes them as equal, so only one element is stored
+ * console.log(HashSet.size(set)) // Output: 1
+ * ```
+ *
+ * However, without using the Data module (or another way to implement Equal):
+ *
+ * ```ts
+ * Import { HashSet } from "effect"
+ *
+ * // Objects that do NOT implement the Equal interface const set =
+ * HashSet.empty().pipe( HashSet.add({ name: "Alice", age: 30 }), HashSet.add({name: "Alice", age: 30 }) )
+ *
+ * // Objects are compared by reference, so two elements are stored
+ * console.log(HashSet.size(set)) // Output: 2
+ * ```
+ *
+ * ## When to Use
+ *
+ * Use HashSet when you need:
+ *
+ * - A collection with no duplicate values
+ * - Efficient membership testing (O(1) average complexity)
+ * - Set operations like union, intersection, and difference
+ * - An immutable data structure that preserves functional programming patterns
+ *
+ * ## Operations Reference
+ *
+ * ### Constructors
+ *
+ * | Operation            | Description                            | Complexity |
+ * | -------------------- | -------------------------------------- | ---------- |
+ * | {@link empty}        | Creates an empty HashSet               | O(1)       |
+ * | {@link fromIterable} | Creates a HashSet from an iterable     | O(n)       |
+ * | {@link make}         | Creates a HashSet from multiple values | O(n)       |
+ *
+ * ### Elements
+ *
+ * | Operation        | Description                                 | Complexity |
+ * | ---------------- | ------------------------------------------- | ---------- |
+ * | {@link has}      | Checks if a value exists in the set         | O(1) avg   |
+ * | {@link some}     | Checks if any element satisfies a predicate | O(n)       |
+ * | {@link every}    | Checks if all elements satisfy a predicate  | O(n)       |
+ * | {@link isSubset} | Checks if a set is a subset of another      | O(n)       |
+ *
+ * ### Getters
+ *
+ * | Operation        | Description                    | Complexity |
+ * | ---------------- | ------------------------------ | ---------- |
+ * | {@link values}   | Gets an iterator of all values | O(1)       |
+ * | {@link toValues} | Gets an array of all values    | O(n)       |
+ * | {@link size}     | Gets the number of elements    | O(1)       |
+ *
+ * ### Mutations
+ *
+ * | Operation      | Description                  | Complexity |
+ * | -------------- | ---------------------------- | ---------- |
+ * | {@link add}    | Adds a value to the set      | O(1) avg   |
+ * | {@link remove} | Removes a value from the set | O(1) avg   |
+ * | {@link toggle} | Toggles a value's presence   | O(1) avg   |
+ *
+ * ### Operations
+ *
+ * | Operation            | Description                       | Complexity |
+ * | -------------------- | --------------------------------- | ---------- |
+ * | {@link difference}   | Computes set difference (A - B)   | O(n)       |
+ * | {@link intersection} | Computes set intersection (A ∩ B) | O(n)       |
+ * | {@link union}        | Computes set union (A ∪ B)        | O(n)       |
+ *
+ * ### Mapping
+ *
+ * | Operation   | Description             | Complexity |
+ * | ----------- | ----------------------- | ---------- |
+ * | {@link map} | Transforms each element | O(n)       |
+ *
+ * ### Sequencing
+ *
+ * | Operation       | Description                      | Complexity |
+ * | --------------- | -------------------------------- | ---------- |
+ * | {@link flatMap} | Transforms and flattens elements | O(n)       |
+ *
+ * ### Traversing
+ *
+ * | Operation       | Description                        | Complexity |
+ * | --------------- | ---------------------------------- | ---------- |
+ * | {@link forEach} | Applies a function to each element | O(n)       |
+ *
+ * ### Folding
+ *
+ * | Operation      | Description                       | Complexity |
+ * | -------------- | --------------------------------- | ---------- |
+ * | {@link reduce} | Reduces the set to a single value | O(n)       |
+ *
+ * ### Filtering
+ *
+ * | Operation      | Description                             | Complexity |
+ * | -------------- | --------------------------------------- | ---------- |
+ * | {@link filter} | Keeps elements that satisfy a predicate | O(n)       |
+ *
+ * ### Partitioning
+ *
+ * | Operation         | Description                         | Complexity |
+ * | ----------------- | ----------------------------------- | ---------- |
+ * | {@link partition} | Splits into two sets by a predicate | O(n)       |
+ *
+ * ## Advanced Features
+ *
+ * HashSet provides operations for:
+ *
+ * - Transforming sets with map and flatMap
+ * - Filtering elements with filter
+ * - Combining sets with union, intersection and difference
+ * - Performance optimizations via mutable operations in controlled contexts
+ *
+ * ## Performance Characteristics
+ *
+ * - Lookup operations (has): O(1) average time complexity
+ * - Insertion operations (add): O(1) average time complexity
+ * - Removal operations (remove): O(1) average time complexity
+ * - Set operations (union, intersection): O(n) where n is the size of the smaller
+ *   set
+ * - Iteration: O(n) where n is the size of the set
+ *
+ * ## Notes
+ *
+ * The HashSet data structure implements the following traits:
+ *
+ * - {@link Iterable}: allows iterating over the values in the set
+ * - {@link Equal}: allows comparing two sets for value-based equality
+ * - {@link Pipeable}: allows chaining operations with the pipe operator
+ * - {@link Inspectable}: allows inspecting the contents of the set
+ *
+ * @module
  * @since 2.0.0
  */
 
