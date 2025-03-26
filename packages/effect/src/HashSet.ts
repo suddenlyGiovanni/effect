@@ -206,17 +206,18 @@ export const isHashSet: {
  * @example
  *
  * ```ts
- * import { HashSet } from "effect"
+ * import { HashSet, pipe } from "effect"
  *
- * // Provide a type argument to create a HashSet of a specific type
- * const emptyHashSetOfNumbers = HashSet.empty<number>().pipe(
- *   HashSet.add(1),
- *   HashSet.add(1),
- *   HashSet.add(2)
- * )
- *
- * console.log(HashSet.size(emptyHashSetOfNumbers)) // Output: 2
- * console.log(HashSet.toValues(emptyHashSetOfNumbers)) // Output: [1, 2]
+ * console.log(
+ *   pipe(
+ *     // Provide a type argument to create a HashSet of a specific type
+ *     HashSet.empty<number>(),
+ *     HashSet.add(1),
+ *     HashSet.add(1), // Notice the duplicate
+ *     HashSet.add(2),
+ *     HashSet.toValues
+ *   )
+ * ) // Output: [1, 2]
  * ```
  *
  * @see Other `HashSet` constructors are {@link make} {@link fromIterable}
