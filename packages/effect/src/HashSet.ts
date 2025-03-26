@@ -235,77 +235,81 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  * @since 2.0.0
  * @category constructors
  * @example
- *   import { Equal, Hash, HashSet, pipe } from "effect"
- *   import assert from "node:assert/strict"
  *
- *   assert.strictEqual(
- *     Equal.equals(
- *       HashSet.make(
- *         Character.of("Alice", "Curious"),
- *         Character.of("Alice", "Curious"),
- *         Character.of("White Rabbit", "Always late"),
- *         Character.of("Mad Hatter", "Tea enthusiast")
- *       ),
- *       // Is the same as adding each character to an empty set
- *       pipe(
- *         HashSet.empty(),
- *         HashSet.add(Character.of("Alice", "Curious")),
- *         HashSet.add(Character.of("Alice", "Curious")), // Alice tried to attend twice!
- *         HashSet.add(Character.of("White Rabbit", "Always late")),
- *         HashSet.add(Character.of("Mad Hatter", "Tea enthusiast"))
- *       )
+ * ```ts
+ * import { Equal, Hash, HashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * assert.strictEqual(
+ *   Equal.equals(
+ *     HashSet.make(
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("White Rabbit", "Always late"),
+ *       Character.of("Mad Hatter", "Tea enthusiast")
  *     ),
- *     true
- *   )
+ *     // Is the same as adding each character to an empty set
+ *     pipe(
+ *       HashSet.empty(),
+ *       HashSet.add(Character.of("Alice", "Curious")),
+ *       HashSet.add(Character.of("Alice", "Curious")), // Alice tried to attend twice!
+ *       HashSet.add(Character.of("White Rabbit", "Always late")),
+ *       HashSet.add(Character.of("Mad Hatter", "Tea enthusiast"))
+ *     )
+ *   ),
+ *   true,
+ *   "`HashSet.make` and `HashSet.empty() + HashSet.add()` should be equal"
+ * )
  *
- *   assert.strictEqual(
- *     Equal.equals(
- *       HashSet.make(
- *         Character.of("Alice", "Curious"),
- *         Character.of("Alice", "Curious"),
- *         Character.of("White Rabbit", "Always late"),
- *         Character.of("Mad Hatter", "Tea enthusiast")
- *       ),
- *       // Is the same as creating a set from an iterable
- *       HashSet.fromIterable([
- *         Character.of("Alice", "Curious"),
- *         Character.of("Alice", "Curious"),
- *         Character.of("White Rabbit", "Always late"),
- *         Character.of("Mad Hatter", "Tea enthusiast")
- *       ])
+ * assert.strictEqual(
+ *   Equal.equals(
+ *     HashSet.make(
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("White Rabbit", "Always late"),
+ *       Character.of("Mad Hatter", "Tea enthusiast")
  *     ),
- *     true
- *   )
+ *     HashSet.fromIterable([
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("Alice", "Curious"),
+ *       Character.of("White Rabbit", "Always late"),
+ *       Character.of("Mad Hatter", "Tea enthusiast")
+ *     ])
+ *   ),
+ *   true,
+ *   "`HashSet.make` and `HashSet.fromIterable` should be equal"
+ * )
  *
- *   class Character implements Equal.Equal {
- *     readonly name: string
- *     readonly trait: string
+ * class Character implements Equal.Equal {
+ *   readonly name: string
+ *   readonly trait: string
  *
- *     constructor(name: string, trait: string) {
- *       this.name = name
- *       this.trait = trait
- *     }
- *
- *     // Define equality based on name, and trait
- *     [Equal.symbol](that: Equal.Equal): boolean {
- *       if (that instanceof Character) {
- *         return (
- *           Equal.equals(this.name, that.name) &&
- *           Equal.equals(this.trait, that.trait)
- *         )
- *       }
- *       return false
- *     }
- *
- *     // Generate a hash code based on the sum of the character's name and trait
- *     [Hash.symbol](): number {
- *       throw Hash.hash(this.name + this.trait)
- *     }
- *
- *     static readonly of = (name: string, trait: string): Character => {
- *       return new Character(name, trait)
- *     }
+ *   constructor(name: string, trait: string) {
+ *     this.name = name
+ *     this.trait = trait
  *   }
+ *
+ *   // Define equality based on name, and trait
+ *   [Equal.symbol](that: Equal.Equal): boolean {
+ *     if (that instanceof Character) {
+ *       return (
+ *         Equal.equals(this.name, that.name) &&
+ *         Equal.equals(this.trait, that.trait)
+ *       )
+ *     }
+ *     return false
+ *   }
+ *
+ *   // Generate a hash code based on the sum of the character's name and trait
+ *   [Hash.symbol](): number {
+ *     throw Hash.hash(this.name + this.trait)
+ *   }
+ *
+ *   static readonly of = (name: string, trait: string): Character => {
+ *     return new Character(name, trait)
+ *   }
+ * }
+ * ```
  *
  * @see Other `HashSet` constructors are {@link fromIterable} {@link empty}
  */
