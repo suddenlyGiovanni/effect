@@ -231,28 +231,29 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  * @example Creating a HashSet from an {@link Array}
  *
  * ```ts
- * import { HashSet } from "effect"
+ * import { HashSet, pipe } from "effect"
  *
- * const array: Iterable<number> = [1, 2, 3, 4, 5, 1, 2, 3] // Note the duplicates
- * const uniqueNumbers = HashSet.fromIterable(array)
- *
- * console.log(HashSet.toValues(uniqueNumbers)) // Output: [1, 2, 3, 4, 5]
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3, 4, 5, 1, 2, 3], // Array<number> is an Iterable<number>;  Note the duplicates.
+ *     HashSet.fromIterable,
+ *     HashSet.toValues
+ *   )
+ * ) // Output: [1, 2, 3, 4, 5]
  * ```
  *
  * @example Creating a HashSet from a {@link Set}
  *
  * ```ts
- * import { HashSet } from "effect"
+ * import { HashSet, pipe } from "effect"
  *
- * const fruitsSet: Iterable<string> = new Set([
- *   "apple",
- *   "banana",
- *   "orange",
- *   "apple"
- * ])
- * const fruitsHashSet = HashSet.fromIterable(fruitsSet)
- *
- * console.log(HashSet.toValues(fruitsHashSet)) // Output: ["apple", "banana", "orange"]
+ * console.log(
+ *   pipe(
+ *     new Set(["apple", "banana", "orange", "apple"]), // Set<string> is an Iterable<string>
+ *     HashSet.fromIterable,
+ *     HashSet.toValues
+ *   )
+ * ) // Output: ["apple", "banana", "orange"]
  * ```
  *
  * @example Creating a HashSet from a {@link Generator}
@@ -272,6 +273,36 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  *
  * console.log(HashSet.toValues(fibonacciSet))
  * // Outputs: [0, 1, 2, 3, 5, 8, 13, 21, 34] but in unsorted order
+ * ```
+ *
+ * @example Creating a HashSet from another {@link HashSet}
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     // since HashSet implements the Iterable interface, we can use it to create a new HashSet
+ *     HashSet.make(1, 2, 3, 4),
+ *     HashSet.fromIterable,
+ *     HashSet.toValues // turns the HashSet back into an array
+ *   )
+ * ) // Output: [1, 2, 3, 4]
+ * ```
+ *
+ * @example Creating a HashSet from other Effect's data structures like
+ * {@link Chunk}
+ *
+ * ```ts
+ * import { Chunk, HashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     Chunk.make(1, 2, 3, 4), // Iterable<number>
+ *     HashSet.fromIterable,
+ *     HashSet.toValues // turns the HashSet back into an array
+ *   )
+ * ) // Outputs: [1, 2, 3, 4]
  * ```
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
