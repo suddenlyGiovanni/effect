@@ -204,19 +204,20 @@ export const isHashSet: {
  * @since 2.0.0
  * @category constructors
  * @example
- *   import { HashSet } from "effect"
  *
- *   // Provide a type argument to create a HashSet of a specific type
- *   const emptyHashSetOfNumbers = HashSet.empty<number>()
+ * ```ts
+ * import { HashSet } from "effect"
  *
- *   emptyHashSetOfNumbers.pipe(
- *     HashSet.add(1),
- *     HashSet.add(1),
- *     HashSet.add(2)
- *   )
+ * // Provide a type argument to create a HashSet of a specific type
+ * const emptyHashSetOfNumbers = HashSet.empty<number>().pipe(
+ *   HashSet.add(1),
+ *   HashSet.add(1),
+ *   HashSet.add(2)
+ * )
  *
- *   console.log(HashSet.size(emptyHashSetOfNumbers)) // Output: 2
- *   console.log(HashSet.toValues(emptyHashSetOfNumbers)) // Output: [1, 2]
+ * console.log(HashSet.size(emptyHashSetOfNumbers)) // Output: 2
+ * console.log(HashSet.toValues(emptyHashSetOfNumbers)) // Output: [1, 2]
+ * ```
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
