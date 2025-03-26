@@ -228,6 +228,51 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  *
  * @since 2.0.0
  * @category constructors
+ * @example Creating a HashSet from an {@link Array}
+ *
+ * ```ts
+ * import { HashSet } from "effect"
+ *
+ * const array: Iterable<number> = [1, 2, 3, 4, 5, 1, 2, 3] // Note the duplicates
+ * const uniqueNumbers = HashSet.fromIterable(array)
+ *
+ * console.log(HashSet.toValues(uniqueNumbers)) // Output: [1, 2, 3, 4, 5]
+ * ```
+ *
+ * @example Creating a HashSet from a {@link Set}
+ *
+ * ```ts
+ * import { HashSet } from "effect"
+ *
+ * const fruitsSet: Iterable<string> = new Set([
+ *   "apple",
+ *   "banana",
+ *   "orange",
+ *   "apple"
+ * ])
+ * const fruitsHashSet = HashSet.fromIterable(fruitsSet)
+ *
+ * console.log(HashSet.toValues(fruitsHashSet)) // Output: ["apple", "banana", "orange"]
+ * ```
+ *
+ * @example Creating a HashSet from a {@link Generator}
+ *
+ * ```ts
+ * // Generator functions return iterables
+ * function* fibonacci(n: number): Generator<number, void, unknown> {
+ *   let [a, b] = [0, 1]
+ *   for (let i = 0; i < n; i++) {
+ *     yield a
+ *     ;[a, b] = [b, a + b]
+ *   }
+ * }
+ *
+ * // Create a HashSet from the first 10 Fibonacci numbers
+ * const fibonacciSet = HashSet.fromIterable(fibonacci(10))
+ *
+ * console.log(HashSet.toValues(fibonacciSet))
+ * // Outputs: [0, 1, 2, 3, 5, 8, 13, 21, 34] but in unsorted order
+ * ```
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
 
