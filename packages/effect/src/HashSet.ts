@@ -15,10 +15,14 @@
  * interface. This allows objects with the same content to be treated as equal:
  *
  * ```ts
- * import { HashSet, Data } from "effect"
+ * import { Data, HashSet, pipe } from "effect"
  *
  * // Creating a HashSet with objects that implement the Equal interface
- * const set = HashSet.empty().pipe(
+ * const set: HashSet.HashSet<{
+ *   readonly age: number
+ *   readonly name: string
+ * }> = pipe(
+ *   HashSet.empty(),
  *   HashSet.add(Data.struct({ name: "Alice", age: 30 })),
  *   HashSet.add(Data.struct({ name: "Alice", age: 30 }))
  * )
@@ -30,10 +34,14 @@
  * However, without using the Data module (or another way to implement Equal):
  *
  * ```ts
- * Import { HashSet } from "effect"
+ * import { HashSet, pipe } from "effect"
  *
  * // Objects that do NOT implement the Equal interface const set =
- * HashSet.empty().pipe( HashSet.add({ name: "Alice", age: 30 }), HashSet.add({name: "Alice", age: 30 }) )
+ * const set = pipe(
+ *   HashSet.empty(),
+ *   HashSet.add({ name: "Alice", age: 30 }),
+ *   HashSet.add({ name: "Alice", age: 30 })
+ * )
  *
  * // Objects are compared by reference, so two elements are stored
  * console.log(HashSet.size(set)) // Output: 2
@@ -195,6 +203,20 @@ export const isHashSet: {
  *
  * @since 2.0.0
  * @category constructors
+ * @example
+ *   import { HashSet } from "effect"
+ *
+ *   // Provide a type argument to create a HashSet of a specific type
+ *   const emptyHashSetOfNumbers = HashSet.empty<number>()
+ *
+ *   emptyHashSetOfNumbers.pipe(
+ *     HashSet.add(1),
+ *     HashSet.add(1),
+ *     HashSet.add(2)
+ *   )
+ *
+ *   console.log(HashSet.size(emptyHashSetOfNumbers)) // Output: 2
+ *   console.log(HashSet.toValues(emptyHashSetOfNumbers)) // Output: [1, 2]
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
