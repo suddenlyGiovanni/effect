@@ -218,6 +218,8 @@ export const isHashSet: {
  * console.log(HashSet.size(emptyHashSetOfNumbers)) // Output: 2
  * console.log(HashSet.toValues(emptyHashSetOfNumbers)) // Output: [1, 2]
  * ```
+ *
+ * @see Other `HashSet` constructors are {@link make} {@link fromIterable}
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
