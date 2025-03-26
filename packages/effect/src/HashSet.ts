@@ -448,6 +448,22 @@ export const isSubset: {
  *
  * @since 2.0.0
  * @category getters
+ * @example
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const numberIterable = pipe(
+ *   HashSet.make(0, 1, 1, 2), // HashSet.HashSet<number>
+ *   HashSet.values // takes an HashSet<A> and returns an IterableIterator<A>
+ * )
+ *
+ * for (const number of numberIterable) {
+ *   console.log(number) // it will logs: 0, 1, 2
+ * }
+ * ```
+ *
+ * @see check out the other gettes {@link toValues} {@link size}
  */
 export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 
