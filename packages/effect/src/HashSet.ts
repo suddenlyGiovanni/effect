@@ -699,11 +699,72 @@ export const every: {
  *
  * **NOTE**: the hash and equal of both sets must be the same.
  *
+ * Time complexity analisys is of `O(n)`
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category elements
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const set1 = HashSet.make(0, 1)
+ * const set2 = HashSet.make(1, 2)
+ * const set3 = HashSet.make(0, 1, 2)
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(set1, HashSet.isSubset(set2)) // false
+ * pipe(set1, HashSet.isSubset(set3)) // true
+ *
+ * // or piped with the pipe function
+ * set1.pipe(HashSet.isSubset(set2)) // false
+ * set1.pipe(HashSet.isSubset(set3)) // true
+ *
+ * // or with `data-first` API
+ * HashSet.isSubset(set1, set2) // false
+ * HashSet.isSubset(set1, set3) // true)
+ * ```
  */
 export const isSubset: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.equal(
+   *   pipe(
+   *     HashSet.make(0, 1), //
+   *     HashSet.isSubset(HashSet.make(1, 2))
+   *   ),
+   *   false
+   * )
+   *
+   * assert.equal(
+   *   pipe(
+   *     HashSet.make(0, 1), //
+   *     HashSet.isSubset(HashSet.make(0, 1, 2))
+   *   ),
+   *   true
+   * )
+   * ```
+   */
   <A>(that: HashSet<A>): (self: HashSet<A>) => boolean
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.equal(HashSet.isSubset(set1, set2), false)
+   *
+   * assert.equal(HashSet.isSubset(set1, set3), true)
+   * ```
+   */
   <A>(self: HashSet<A>, that: HashSet<A>): boolean
 } = HS.isSubset
 
