@@ -546,13 +546,150 @@ export const some: {
 /**
  * Check if a predicate holds true for every `HashSet` element.
  *
+ * Time complexity is **O(n)** as it need to traverse the whole HashSet
+ * collection
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category elements
+ * @example **syntax** with {@link Refinement}
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const numberOrString = HashSet.make(1, "1", "one", "uno")
+ *
+ * // with `data-last`, a.k.a. `pipeable` API and `Refinement`
+ * pipe(
+ *   numberOrString, // HashSet.HashSet<number | string>
+ *   HashSet.every(Predicate.isString)
+ * ) // HashSet.HashSet<string>
+ *
+ * // or piped with the pipe function and  `Refinement`
+ * numberOrString // HashSet.HashSet<number | string>
+ *   .pipe(HashSet.every(Predicate.isString)) // HashSet.HashSet<string>
+ *
+ * // or with `data-first` API and `Refinement`
+ * HashSet.every(
+ *   numberOrString, // HashSet.HashSet<number | string>
+ *   Predicate.isString
+ * ) // HashSet.HashSet<string>
+ * ```
+ *
+ * @example **syntax** with {@link Predicate}
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const set = HashSet.make(1, 2, 3)
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   set,
+ *   HashSet.every((n) => n >= 0)
+ * ) // true
+ *
+ * // or piped with the pipe function
+ * set.pipe(HashSet.every((n) => n >= 0)) // true
+ *
+ * // or with `data-first` API
+ * HashSet.every(set, (n) => n >= 0) // true
+ * ```
+ *
+ * @returns A boolean once it has evaluated that whole collecion fullfill the
+ *   Predicate function
  */
 export const every: {
-  <A, B extends A>(refinement: Refinement<NoInfer<A>, B>): (self: HashSet<A>) => self is HashSet<B>
+  /**
+   * @example
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { Effect, HashSet, pipe, Predicate } from "effect"
+   *
+   * const numberOrString: HashSet.HashSet<number | string> = HashSet.make(
+   *   1,
+   *   "1",
+   *   "one",
+   *   "uno"
+   * )
+   *
+   * assert.equal(
+   *   pipe(
+   *     numberOrString, // HashSet.HashSet<number | string>
+   *     HashSet.every(Predicate.isString)
+   *   ), // HashSet.HashSet<string>
+   *   false
+   * )
+   * ```
+   */
+  <A, B extends A>(
+    refinement: Refinement<NoInfer<A>, B>
+  ): (self: HashSet<A>) => self is HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet, pipe } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(
+   *   pipe(
+   *     set,
+   *     HashSet.every((n) => n >= 0)
+   *   ),
+   *   true
+   * )
+   * ```
+   */
   <A>(predicate: Predicate<A>): (self: HashSet<A>) => boolean
-  <A, B extends A>(self: HashSet<A>, refinement: Refinement<A, B>): self is HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { Effect, HashSet, pipe, Predicate } from "effect"
+   *
+   * const numberOrString: HashSet.HashSet<number | string> = HashSet.make(
+   *   1,
+   *   "1",
+   *   "one",
+   *   "uno"
+   * )
+   *
+   * assert.equal(
+   *   HashSet.every(
+   *     numberOrString, // HashSet.HashSet<number | string>
+   *     Predicate.isString
+   *   ), // HashSet.HashSet<string>
+   *   false
+   * )
+   * ```
+   */
+  <A, B extends A>(
+    self: HashSet<A>,
+    refinement: Refinement<A, B>
+  ): self is HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(
+   *   HashSet.every(set, (n) => n >= 0),
+   *   true
+   * )
+   * ```
+   */
   <A>(self: HashSet<A>, predicate: Predicate<A>): boolean
 } = HS.every
 
