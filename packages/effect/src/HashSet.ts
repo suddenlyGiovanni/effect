@@ -406,11 +406,60 @@ export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<A
 /**
  * Checks if the specified value exists in the `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category elements
+ * @example **syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(HashSet.make(0, 1, 2), HashSet.has(3)) // false
+ *
+ * // or piped with the pipe function
+ * HashSet.make(0, 1, 2).pipe(HashSet.has(3)) // false
+ *
+ * // or with `data-first` API
+ * HashSet.has(HashSet.make(0, 1, 2), 3) // false
+ * ```
+ *
+ * @returns A `boolean` signaling the presence of the value in the HashSet
+ * @todo Add time complexity analisys
  */
 export const has: {
+  /**
+   * @example {@link has} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet, pipe } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(pipe(set, HashSet.has(0)), true)
+   * assert.equal(pipe(set, HashSet.has(1)), true)
+   * assert.equal(pipe(set, HashSet.has(2)), true)
+   * assert.equal(pipe(set, HashSet.has(3)), false)
+   * ```
+   */
   <A>(value: A): (self: HashSet<A>) => boolean
+
+  /**
+   * @example {@link has} `data-first` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet, pipe } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(HashSet.has(set, 0), true)
+   * assert.equal(HashSet.has(set, 1), true)
+   * assert.equal(HashSet.has(set, 2), true)
+   * assert.equal(HashSet.has(set, 3), false)
+   * ```
+   */
   <A>(self: HashSet<A>, value: A): boolean
 } = HS.has
 
