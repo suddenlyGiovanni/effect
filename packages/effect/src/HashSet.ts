@@ -1548,17 +1548,168 @@ export const filter: {
  * right side of the resulting `Tuple`, otherwise the value will be placed into
  * the left side.
  *
+ * Time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category partitioning
+ * @example **Syntax** with {@link Predicate}
+ *
+ * ```ts
+ * import { HashSet, pipe, Predicate } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(0, 1, 2, 3, 4, 5),
+ *   HashSet.partition((n) => n % 2 === 0)
+ * )
+ *
+ * // or with the pipe method
+ * HashSet.make(0, 1, 2, 3, 4, 5).pipe(
+ *   HashSet.partition((n) => n % 2 === 0)
+ * )
+ *
+ * // or with `data-first` API
+ * HashSet.partition(HashSet.make(0, 1, 2, 3, 4, 5), (n) => n % 2 === 0)
+ * ```
+ *
+ * @example **Syntax** with {@link Refinement}
+ *
+ * ```ts
+ * import { HashSet, pipe, Predicate } from "effect"
+ *
+ * const stringRefinement: Predicate.Refinement<string | number, string> = (
+ *   value
+ * ) => typeof value === "string"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier"),
+ *   HashSet.partition(stringRefinement)
+ * )
+ *
+ * // or with the pipe method
+ * HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier").pipe(
+ *   HashSet.partition(stringRefinement)
+ * )
+ *
+ * // or with `data-first` API
+ * HashSet.partition(
+ *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier"),
+ *   stringRefinement
+ * )
+ * ```
  */
 export const partition: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const numbersAndStringsHashSet: HashSet.HashSet<number | string> =
+   *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier")
+   *
+   * const stringRefinement: Predicate.Refinement<
+   *   string | number,
+   *   string
+   * > = (value) => typeof value === "string"
+   *
+   * const [
+   *   excluded, // HashSet.HashSet<number>
+   *   satisfying // HashSet.HashSet<string>
+   * ] = pipe(numbersAndStringsHashSet, HashSet.partition(stringRefinement))
+   *
+   * assert.equal(pipe(satisfying, HashSet.every(Predicate.isString)), true)
+   * assert.equal(pipe(excluded, HashSet.every(Predicate.isNumber)), true)
+   *
+   * assert.deepStrictEqual(excluded, HashSet.make(1, 2, 3, 4))
+   * assert.deepStrictEqual(
+   *   satisfying,
+   *   HashSet.make("unos", "two", "trois", "vier")
+   * )
+   * ```
+   */
   <A, B extends A>(
     refinement: Refinement<NoInfer<A>, B>
-  ): (self: HashSet<A>) => [excluded: HashSet<Exclude<A, B>>, satisfying: HashSet<B>]
-  <A>(predicate: Predicate<NoInfer<A>>): (self: HashSet<A>) => [excluded: HashSet<A>, satisfying: HashSet<A>]
+  ): (
+    self: HashSet<A>
+  ) => [excluded: HashSet<Exclude<A, B>>, satisfying: HashSet<B>]
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const [excluded, satisfying] = pipe(
+   *   HashSet.make(0, 1, 2, 3, 4, 5),
+   *   HashSet.partition((n) => n % 2 === 0)
+   * )
+   *
+   * assert.deepStrictEqual(excluded, HashSet.make(1, 3, 5))
+   * assert.deepStrictEqual(satisfying, HashSet.make(0, 2, 4))
+   * ```
+   */
+  <A>(
+    predicate: Predicate<NoInfer<A>>
+  ): (self: HashSet<A>) => [excluded: HashSet<A>, satisfying: HashSet<A>]
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const numbersAndStringsHashSet: HashSet.HashSet<number | string> =
+   *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier")
+   *
+   * const stringRefinement: Predicate.Refinement<
+   *   string | number,
+   *   string
+   * > = (value) => typeof value === "string"
+   *
+   * const [
+   *   excluded, // HashSet.HashSet<number>
+   *   satisfying // HashSet.HashSet<string>
+   * ] = HashSet.partition(numbersAndStringsHashSet, stringRefinement)
+   *
+   * assert.equal(HashSet.every(satisfying, Predicate.isString), true)
+   * assert.equal(HashSet.every(excluded, Predicate.isNumber), true)
+   *
+   * assert.deepStrictEqual(excluded, HashSet.make(1, 2, 3, 4))
+   * assert.deepStrictEqual(
+   *   satisfying,
+   *   HashSet.make("unos", "two", "trois", "vier")
+   * )
+   * ```
+   */
   <A, B extends A>(
     self: HashSet<A>,
     refinement: Refinement<A, B>
   ): [excluded: HashSet<Exclude<A, B>>, satisfying: HashSet<B>]
-  <A>(self: HashSet<A>, predicate: Predicate<A>): [excluded: HashSet<A>, satisfying: HashSet<A>]
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const [excluded, satisfying] = HashSet.partition(
+   *   HashSet.make(0, 1, 2, 3, 4, 5),
+   *   (n) => n % 2 === 0
+   * )
+   *
+   * assert.deepStrictEqual(excluded, HashSet.make(1, 3, 5))
+   * assert.deepStrictEqual(satisfying, HashSet.make(0, 2, 4))
+   * ```
+   */
+  <A>(
+    self: HashSet<A>,
+    predicate: Predicate<A>
+  ): [excluded: HashSet<A>, satisfying: HashSet<A>]
 } = HS.partition
