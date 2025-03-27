@@ -500,6 +500,21 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
  *
  * @since 2.0.0
  * @category getters
+ * @example
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * assert.deepStrictEqual(pipe(HashSet.empty(), HashSet.size), 0)
+ *
+ * assert.deepStrictEqual(
+ *   pipe(HashSet.make(1, 2, 2, 3, 4, 3), HashSet.size),
+ *   4
+ * )
+ * ```
+ *
+ * @see check out the other gettes {@link values} {@link toValues}
  */
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
