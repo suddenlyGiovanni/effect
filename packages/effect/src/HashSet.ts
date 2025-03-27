@@ -1266,11 +1266,64 @@ export const flatMap: {
 /**
  * Applies the specified function to the values of the `HashSet`.
  *
+ * The time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category traversing
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(HashSet.make(0, 1, 2), HashSet.forEach(console.log)) // logs: 0 1 2
+ *
+ * // or piped with the pipe method
+ * HashSet.make(0, 1, 2).pipe(HashSet.forEach(console.log)) // logs: 0 1 2
+ *
+ * // or with `data-first` API
+ * HashSet.forEach(HashSet.make(0, 1, 2), console.log) // logs: 0 1 2
+ * ```
  */
 export const forEach: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const result: Array<number> = []
+   *
+   * pipe(
+   *   HashSet.make(0, 1, 2),
+   *   HashSet.forEach((n): void => {
+   *     result.push(n)
+   *   })
+   * )
+   *
+   * assert.deepStrictEqual(result, [0, 1, 2])
+   * ```
+   */
   <A>(f: (value: A) => void): (self: HashSet<A>) => void
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const result: Array<number> = []
+   *
+   * HashSet.forEach(HashSet.make(0, 1, 2), (n): void => {
+   *   result.push(n)
+   * })
+   *
+   * assert.deepStrictEqual(result, [0, 1, 2])
+   * ```
+   */
   <A>(self: HashSet<A>, f: (value: A) => void): void
 } = HS.forEach
 
