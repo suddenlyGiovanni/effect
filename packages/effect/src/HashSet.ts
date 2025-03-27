@@ -1200,11 +1200,66 @@ export const map: {
 /**
  * Chains over the values of the `HashSet` using the specified function.
  *
+ * The time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category sequencing
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(0, 1, 2), // HashSet.HashSet<number>
+ *   HashSet.flatMap((n) => Array.of(String(n))) // HashSet.HashSet<string>
+ * )
+ *
+ * // or piped with the pipe method
+ * HashSet.make(0, 1, 2) // HashSet.HashSet<number>
+ *   .pipe(
+ *     HashSet.flatMap((n) => Array.of(String(n))) // HashSet.HashSet<string>
+ *   )
+ *
+ * // or with `data-first` API
+ * HashSet.flatMap(HashSet.make(0, 1, 2), (n) => Array.of(String(n)))
+ * ```
  */
 export const flatMap: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, List } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   pipe(
+   *     HashSet.make(0, 1, 2),
+   *     HashSet.flatMap((n) => List.of(String(n * n))) // needs to return an Iterable
+   *   ),
+   *   HashSet.make("0", "1", "4")
+   * )
+   * ```
+   */
   <A, B>(f: (a: A) => Iterable<B>): (self: HashSet<A>) => HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, List } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   HashSet.flatMap(HashSet.make(0, 1, 2), (n) =>
+   *     List.of(String(n * n * n))
+   *   ), // needs to return an Iterable
+   *   HashSet.make("0", "1", "8")
+   * )
+   * ```
+   */
   <A, B>(self: HashSet<A>, f: (a: A) => Iterable<B>): HashSet<B>
 } = HS.flatMap
 
