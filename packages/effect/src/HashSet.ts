@@ -466,11 +466,80 @@ export const has: {
 /**
  * Check if a predicate holds true for some `HashSet` element.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category elements
+ * @example **syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const set: HashSet.HashSet<number> = HashSet.make(0, 1, 2)
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   set,
+ *   HashSet.some((n) => n > 0)
+ * ) // true
+ *
+ * // or piped with the pipe function
+ * set.pipe(HashSet.some((n) => n > 0)) // true
+ *
+ * // or with `data-first` API
+ * HashSet.some(set, (n) => n > 0) // true
+ * ```
+ *
+ * @todo Add time complexity analisys
  */
 export const some: {
+  /**
+   * @example {@link some} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet, pipe } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(
+   *   pipe(
+   *     set,
+   *     HashSet.some((n) => n > 0)
+   *   ),
+   *   true
+   * )
+   *
+   * assert.equal(
+   *   pipe(
+   *     set,
+   *     HashSet.some((n) => n > 2)
+   *   ),
+   *   false
+   * )
+   * ```
+   */
   <A>(f: Predicate<A>): (self: HashSet<A>) => boolean
+
+  /**
+   * @example {@link some} `data-first` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { HashSet } from "effect"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   *
+   * assert.equal(
+   *   HashSet.some(set, (n) => n > 0),
+   *   true
+   * )
+   *
+   * assert.equal(
+   *   HashSet.some(set, (n) => n > 2),
+   *   false
+   * )
+   * ```
+   */
   <A>(self: HashSet<A>, f: Predicate<A>): boolean
 } = HS.some
 
