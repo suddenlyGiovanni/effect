@@ -162,7 +162,7 @@
  * - {@link Pipeable}: allows chaining operations with the pipe operator
  * - {@link Inspectable}: allows inspecting the contents of the set
  *
- * @module
+ * @module HashSet
  * @since 2.0.0
  */
 
