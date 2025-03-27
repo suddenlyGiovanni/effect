@@ -546,9 +546,47 @@ export const mutate: {
  * Adds a value to the `HashSet`.
  *
  * @since 2.0.0
+ * @see check out the other mutaitons {@link remove} {@link toggle}
  */
 export const add: {
+  /**
+   * @example Add pipable api
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   pipe(
+   *     HashSet.empty<number>(), // HashSet.HashSet<number>
+   *     HashSet.add(0),
+   *     HashSet.add(1),
+   *     HashSet.add(1),
+   *     HashSet.add(2),
+   *     HashSet.toValues
+   *   ),
+   *   Array.of(0, 1, 2)
+   * )
+   * ```
+   */
   <A>(value: A): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * const empty = HashSet.empty<number>()
+   * const withZero = HashSet.add(empty, 0)
+   * const withOne = HashSet.add(withZero, 1)
+   * const withTwo = HashSet.add(withOne, 2)
+   * const withTwoTwo = HashSet.add(withTwo, 2)
+   *
+   * assert.deepStrictEqual(HashSet.toValues(withTwoTwo), Array.of(0, 1, 2))
+   * ```
+   */
   <A>(self: HashSet<A>, value: A): HashSet<A>
 } = HS.add
 
