@@ -545,12 +545,34 @@ export const mutate: {
 /**
  * Adds a value to the `HashSet`.
  *
+ * @remarks
+ * Remember that a `HashSet` is a collection of unique values, so adding a value
+ * that already exists in the `HashSet` will not add a duplicate.
+ *
+ * Remember that HashSet is an immutable data structure, so the `add` function,
+ * like all other functions that modify the HashSet, will return a new HashSet
+ * with the added value.
  * @since 2.0.0
- * @see check out the other mutaitons {@link remove} {@link toggle}
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(HashSet.empty(), HashSet.add(0), HashSet.add(0))
+ *
+ * // or piped with the pipe function
+ * HashSet.empty().pipe(HashSet.add(0))
+ *
+ * // or with data-first API
+ * HashSet.add(HashSet.empty(), 0)
+ * ```
+ *
+ * @see check out the other mutations {@link remove} {@link toggle}
  */
 export const add: {
   /**
-   * @example Add pipable api
+   * @example {@link add} `data-last` a.k.a. `pipeable` API
    *
    * ```ts
    * import { HashSet, pipe } from "effect"
@@ -572,7 +594,7 @@ export const add: {
   <A>(value: A): (self: HashSet<A>) => HashSet<A>
 
   /**
-   * @example
+   * @example {@link add} `data-first` API
    *
    * ```ts
    * import { HashSet, pipe } from "effect"
