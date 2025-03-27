@@ -201,6 +201,7 @@ export const isHashSet: {
 /**
  * Creates an empty `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category constructors
  * @example
@@ -228,6 +229,7 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
 /**
  * Creates a new `HashSet` from an iterable collection of values.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category constructors
  * @example Creating a HashSet from an {@link Array}
@@ -316,6 +318,7 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
 /**
  * Construct a new `HashSet` from a variable number of values.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category constructors
  * @example
@@ -452,6 +455,7 @@ export const isSubset: {
 /**
  * Returns an `IterableIterator` of the values in the `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category getters
  * @example
@@ -479,6 +483,7 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
  *
  * Time complexity of O(n)
  *
+ * @memberof HashSet
  * @since 3.13.0
  * @category getters
  * @example
@@ -504,6 +509,7 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
 /**
  * Calculates the number of values in the `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @category getters
  * @example
@@ -559,6 +565,7 @@ export const mutate: {
  * Remember that HashSet is an immutable data structure, so the `add` function,
  * like all other functions that modify the HashSet, will return a new HashSet
  * with the added value.
+ * @memberof HashSet
  * @since 2.0.0
  * @example **Syntax**
  *
@@ -623,6 +630,7 @@ export const add: {
 /**
  * Removes a value from the `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
  * @example **Syntax**
  *
