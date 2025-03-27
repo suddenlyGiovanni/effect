@@ -470,8 +470,26 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 /**
  * Returns an `Array` of the values within the `HashSet`.
  *
+ * Time complexity of O(n)
+ *
  * @since 3.13.0
  * @category getters
+ * @example
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ * import { deepStrictEqual } from "node:assert/strict"
+ *
+ * deepStrictEqual(
+ *   pipe(
+ *     HashSet.make(0, 1, 1, 2), // HashSet<number>
+ *     HashSet.toValues // takes an HashSet<A> and returns an Array<A>
+ *   ),
+ *   Array.of(0, 1, 2)
+ * )
+ * ```
+ *
+ * @see check out the other gettes {@link values} {@link size}
  */
 export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(self))
 
