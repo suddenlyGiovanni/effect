@@ -221,6 +221,7 @@ export const isHashSet: {
  * ```
  *
  * @see Other `HashSet` constructors are {@link make} {@link fromIterable}
+ * @todo Remember to add time complexity analisys
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
@@ -307,6 +308,8 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  *   )
  * ) // Outputs: [1, 2, 3, 4]
  * ```
+ *
+ * @todo Remember to add time complexity analisys
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
 
@@ -393,6 +396,7 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  * ```
  *
  * @see Other `HashSet` constructors are {@link fromIterable} {@link empty}
+ * @todo Remember to add time complexity analisys
  */
 export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<As[number]> = HS.make
 
@@ -466,6 +470,7 @@ export const isSubset: {
  * ```
  *
  * @see check out the other gettes {@link toValues} {@link size}
+ * @todo Remember to add time complexity analisys
  */
 export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 
@@ -492,6 +497,7 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
  * ```
  *
  * @see check out the other gettes {@link values} {@link size}
+ * @todo Remember to add time complexity analisys
  */
 export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(self))
 
@@ -515,6 +521,7 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
  * ```
  *
  * @see check out the other gettes {@link values} {@link toValues}
+ * @todo Remember to add time complexity analisys
  */
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
@@ -569,6 +576,7 @@ export const mutate: {
  * ```
  *
  * @see check out the other mutations {@link remove} {@link toggle}
+ * @todo Remember to add time complexity analisys
  */
 export const add: {
   /**
@@ -632,6 +640,8 @@ export const add: {
  * ```
  *
  * @todo Remind the user of the immutability garanties of the HashSet data type
+ *
+ * @todo Add time complexity analisys
  */
 export const remove: {
   /**
