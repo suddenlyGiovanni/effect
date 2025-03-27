@@ -260,6 +260,8 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  * @example Creating a HashSet from a {@link Generator}
  *
  * ```ts
+ * import { HashSet } from "effect"
+ *
  * // Generator functions return iterables
  * function* fibonacci(n: number): Generator<number, void, unknown> {
  *   let [a, b] = [0, 1]
@@ -319,6 +321,36 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  * import { Equal, Hash, HashSet, pipe } from "effect"
  * import assert from "node:assert/strict"
  *
+ * class Character implements Equal.Equal {
+ *   readonly name: string
+ *   readonly trait: string
+ *
+ *   constructor(name: string, trait: string) {
+ *     this.name = name
+ *     this.trait = trait
+ *   }
+ *
+ *   // Define equality based on name, and trait
+ *   [Equal.symbol](that: Equal.Equal): boolean {
+ *     if (that instanceof Character) {
+ *       return (
+ *         Equal.equals(this.name, that.name) &&
+ *         Equal.equals(this.trait, that.trait)
+ *       )
+ *     }
+ *     return false
+ *   }
+ *
+ *   // Generate a hash code based on the sum of the character's name and trait
+ *   [Hash.symbol](): number {
+ *     throw Hash.hash(this.name + this.trait)
+ *   }
+ *
+ *   static readonly of = (name: string, trait: string): Character => {
+ *     return new Character(name, trait)
+ *   }
+ * }
+ *
  * assert.strictEqual(
  *   Equal.equals(
  *     HashSet.make(
@@ -358,36 +390,6 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  *   true,
  *   "`HashSet.make` and `HashSet.fromIterable` should be equal"
  * )
- *
- * class Character implements Equal.Equal {
- *   readonly name: string
- *   readonly trait: string
- *
- *   constructor(name: string, trait: string) {
- *     this.name = name
- *     this.trait = trait
- *   }
- *
- *   // Define equality based on name, and trait
- *   [Equal.symbol](that: Equal.Equal): boolean {
- *     if (that instanceof Character) {
- *       return (
- *         Equal.equals(this.name, that.name) &&
- *         Equal.equals(this.trait, that.trait)
- *       )
- *     }
- *     return false
- *   }
- *
- *   // Generate a hash code based on the sum of the character's name and trait
- *   [Hash.symbol](): number {
- *     throw Hash.hash(this.name + this.trait)
- *   }
- *
- *   static readonly of = (name: string, trait: string): Character => {
- *     return new Character(name, trait)
- *   }
- * }
  * ```
  *
  * @see Other `HashSet` constructors are {@link fromIterable} {@link empty}
