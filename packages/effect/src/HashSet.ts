@@ -58,82 +58,40 @@
  *
  * ## Operations Reference
  *
- * ### Constructors
- *
- * | Operation            | Description                            | Complexity |
- * | -------------------- | -------------------------------------- | ---------- |
- * | {@link empty}        | Creates an empty HashSet               | O(1)       |
- * | {@link fromIterable} | Creates a HashSet from an iterable     | O(n)       |
- * | {@link make}         | Creates a HashSet from multiple values | O(n)       |
- *
- * ### Elements
- *
- * | Operation        | Description                                 | Complexity |
- * | ---------------- | ------------------------------------------- | ---------- |
- * | {@link has}      | Checks if a value exists in the set         | O(1) avg   |
- * | {@link some}     | Checks if any element satisfies a predicate | O(n)       |
- * | {@link every}    | Checks if all elements satisfy a predicate  | O(n)       |
- * | {@link isSubset} | Checks if a set is a subset of another      | O(n)       |
- *
- * ### Getters
- *
- * | Operation        | Description                    | Complexity |
- * | ---------------- | ------------------------------ | ---------- |
- * | {@link values}   | Gets an iterator of all values | O(1)       |
- * | {@link toValues} | Gets an array of all values    | O(n)       |
- * | {@link size}     | Gets the number of elements    | O(1)       |
- *
- * ### Mutations
- *
- * | Operation      | Description                  | Complexity |
- * | -------------- | ---------------------------- | ---------- |
- * | {@link add}    | Adds a value to the set      | O(1) avg   |
- * | {@link remove} | Removes a value from the set | O(1) avg   |
- * | {@link toggle} | Toggles a value's presence   | O(1) avg   |
- *
- * ### Operations
- *
- * | Operation            | Description                       | Complexity |
- * | -------------------- | --------------------------------- | ---------- |
- * | {@link difference}   | Computes set difference (A - B)   | O(n)       |
- * | {@link intersection} | Computes set intersection (A ∩ B) | O(n)       |
- * | {@link union}        | Computes set union (A ∪ B)        | O(n)       |
- *
- * ### Mapping
- *
- * | Operation   | Description             | Complexity |
- * | ----------- | ----------------------- | ---------- |
- * | {@link map} | Transforms each element | O(n)       |
- *
- * ### Sequencing
- *
- * | Operation       | Description                      | Complexity |
- * | --------------- | -------------------------------- | ---------- |
- * | {@link flatMap} | Transforms and flattens elements | O(n)       |
- *
- * ### Traversing
- *
- * | Operation       | Description                        | Complexity |
- * | --------------- | ---------------------------------- | ---------- |
- * | {@link forEach} | Applies a function to each element | O(n)       |
- *
- * ### Folding
- *
- * | Operation      | Description                       | Complexity |
- * | -------------- | --------------------------------- | ---------- |
- * | {@link reduce} | Reduces the set to a single value | O(n)       |
- *
- * ### Filtering
- *
- * | Operation      | Description                             | Complexity |
- * | -------------- | --------------------------------------- | ---------- |
- * | {@link filter} | Keeps elements that satisfy a predicate | O(n)       |
- *
- * ### Partitioning
- *
- * | Operation         | Description                         | Complexity |
- * | ----------------- | ----------------------------------- | ---------- |
- * | {@link partition} | Splits into two sets by a predicate | O(n)       |
+ * | Category     | Operation            | Description                                 | Complexity |
+ * | ------------ | -------------------- | ------------------------------------------- | ---------- |
+ * | constructors | {@link empty}        | Creates an empty HashSet                    | O(1)       |
+ * | constructors | {@link fromIterable} | Creates a HashSet from an iterable          | O(n)       |
+ * | constructors | {@link make}         | Creates a HashSet from multiple values      | O(n)       |
+ * |              |                      |                                             |            |
+ * | elements     | {@link has}          | Checks if a value exists in the set         | O(1) avg   |
+ * | elements     | {@link some}         | Checks if any element satisfies a predicate | O(n)       |
+ * | elements     | {@link every}        | Checks if all elements satisfy a predicate  | O(n)       |
+ * | elements     | {@link isSubset}     | Checks if a set is a subset of another      | O(n)       |
+ * |              |                      |                                             |            |
+ * | getters      | {@link values}       | Gets an iterator of all values              | O(1)       |
+ * | getters      | {@link toValues}     | Gets an array of all values                 | O(n)       |
+ * | getters      | {@link size}         | Gets the number of elements                 | O(1)       |
+ * |              |                      |                                             |            |
+ * | mutations    | {@link add}          | Adds a value to the set                     | O(1) avg   |
+ * | mutations    | {@link remove}       | Removes a value from the set                | O(1) avg   |
+ * | mutations    | {@link toggle}       | Toggles a value's presence                  | O(1) avg   |
+ * |              |                      |                                             |            |
+ * | operations   | {@link difference}   | Computes set difference (A - B)             | O(n)       |
+ * | operations   | {@link intersection} | Computes set intersection (A ∩ B)           | O(n)       |
+ * | operations   | {@link union}        | Computes set union (A ∪ B)                  | O(n)       |
+ * |              |                      |                                             |            |
+ * | mapping      | {@link map}          | Transforms each element                     | O(n)       |
+ * |              |                      |                                             |            |
+ * | sequencing   | {@link flatMap}      | Transforms and flattens elements            | O(n)       |
+ * |              |                      |                                             |            |
+ * | traversing   | {@link forEach}      | Applies a function to each element          | O(n)       |
+ * |              |                      |                                             |            |
+ * | folding      | {@link reduce}       | Reduces the set to a single value           | O(n)       |
+ * |              |                      |                                             |            |
+ * | filtering    | {@link filter}       | Keeps elements that satisfy a predicate     | O(n)       |
+ * |              |                      |                                             |            |
+ * | partitioning | {@link partition}    | Splits into two sets by a predicate         | O(n)       |
  *
  * ## Advanced Features
  *
