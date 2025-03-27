@@ -728,10 +728,84 @@ export const union: {
  * will be removed from the `HashSet`, otherwise the value will be added to the
  * `HashSet`.
  *
+ * @memberof HashSet
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(HashSet.make(0, 1, 2), HashSet.toggle(0))
+ *
+ * // or piped with the pipe function
+ * HashSet.make(0, 1, 2).pipe(HashSet.toggle(0))
+ *
+ * // or with `data-first` API
+ * HashSet.toggle(HashSet.make(0, 1, 2), 0)
+ * ```
+ *
+ * @returns A new `HashSet` where the toggled value is being either added or
+ *   removed based on the initial `HashSet` state.
+ * @todo Add time space complexity analisys
+ *
+ * @todo Remember to point out that HasSet is an immutable data structure
  */
 export const toggle: {
+  /**
+   * @example {@link toggle} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * // arrange
+   * let set = HashSet.make(0, 1, 2)
+   *
+   * // assert 1: 0 is in the set
+   * assert.equal(pipe(set, HashSet.has(0)), true)
+   *
+   * // act 2: toggle 0 once on the set
+   * set = pipe(set, HashSet.toggle(0))
+   *
+   * // assert 2: 0 is not in the set any longer
+   * assert.equal(pipe(set, HashSet.has(0)), false)
+   *
+   * // act 3: toggle 0 once again on the set
+   * set = pipe(set, HashSet.toggle(0))
+   *
+   * // assert 3: 0 in now back in the set
+   * assert.equal(pipe(set, HashSet.has(0)), true)
+   * ```
+   */
   <A>(value: A): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link toggle} `data-first` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * // arrange
+   * let set = HashSet.make(0, 1, 2)
+   *
+   * // assert 1: 0 is in the set
+   * assert.equal(HashSet.has(set, 0), true)
+   *
+   * // act 2: toggle 0 once on the set
+   * set = HashSet.toggle(set, 0)
+   *
+   * // assert 2: 0 is not in the set any longer
+   * assert.equal(HashSet.has(set, 0), false)
+   *
+   * // act 3: toggle 0 once again on the set
+   * set = HashSet.toggle(set, 0)
+   *
+   * // assert 3: 0 in now back in the set
+   * assert.equal(HashSet.has(set, 0), true)
+   * ```
+   */
   <A>(self: HashSet<A>, value: A): HashSet<A>
 } = HS.toggle
 
