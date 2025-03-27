@@ -608,7 +608,7 @@ export const add: {
    *
    * assert.deepStrictEqual(HashSet.toValues(withTwoTwo), Array.of(0, 1, 2))
    * ```
-   */
+   */ 
   <A>(self: HashSet<A>, value: A): HashSet<A>
 } = HS.add
 
@@ -616,9 +616,58 @@ export const add: {
  * Removes a value from the `HashSet`.
  *
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(HashSet.make(0, 1, 2), HashSet.remove(0))
+ *
+ * // or piped with the pipe function
+ * HashSet.make(0, 1, 2).pipe(HashSet.remove(0))
+ *
+ * // or with `data-first` API
+ * HashSet.remove(HashSet.make(0, 1, 2), 0)
+ * ```
+ *
+ * @todo Remind the user of the immutability garanties of the HashSet data type
  */
 export const remove: {
+  /**
+   * @example {@link remove} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   * const result = pipe(set, HashSet.remove(0))
+   *
+   * assert.equal(pipe(result, HashSet.has(0)), false) // it has correctly removed 0
+   * assert.equal(pipe(set, HashSet.has(0)), true) // it does not mutate the original set
+   * assert.equal(pipe(result, HashSet.has(1)), true)
+   * assert.equal(pipe(result, HashSet.has(2)), true)
+   * ```
+   */
   <A>(value: A): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link remove} `data-first` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const set = HashSet.make(0, 1, 2)
+   * const result = HashSet.remove(set, 0)
+   *
+   * assert.equal(HashSet.has(result, 0), false) // it has correctly removed 0
+   * assert.equal(HashSet.has(set, 0), true) // it does not mutate the original set
+   * assert.equal(HashSet.has(result, 1), true)
+   * assert.equal(HashSet.has(result, 2), true)
+   * ```
+   */
   <A>(self: HashSet<A>, value: A): HashSet<A>
 } = HS.remove
 
