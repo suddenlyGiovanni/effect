@@ -1394,13 +1394,150 @@ export const reduce: {
 /**
  * Filters values out of a `HashSet` using the specified predicate.
  *
+ * The time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category filtering
+ * @example **Syntax** with {@link Predicate}
+ *
+ * ```ts
+ * import { HashSet, type Predicate, pipe } from "effect"
+ *
+ * const filterPositiveNumbers: Predicate.Predicate<number> = (n) => n > 0
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(-2, -1, 0, 1, 2),
+ *   HashSet.filter(filterPositiveNumbers)
+ * )
+ *
+ * // or with the pipe method
+ * HashSet.make(-2, -1, 0, 1, 2).pipe(HashSet.filter(filterPositiveNumbers))
+ *
+ * // or with `data-first` API
+ * HashSet.filter(HashSet.make(-2, -1, 0, 1, 2), filterPositiveNumbers)
+ * ```
+ *
+ * @example **Syntax** with {@link Refinement}
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const stringRefinement = (value: unknown): value is string =>
+ *   typeof value === "string"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier"), // // HashSet.HashSet<number | string>
+ *   HashSet.filter(stringRefinement)
+ * ) // HashSet.HashSet<string>
+ *
+ * // or with the pipe method
+ * HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier") // HashSet.HashSet<number | string>
+ *   .pipe(HashSet.filter(stringRefinement)) // HashSet.HashSet<string>
+ *
+ * // or with `data-first` API
+ * HashSet.filter(
+ *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier"), // HashSet.HashSet<number | string>
+ *   stringRefinement
+ * ) // HashSet.HashSet<string>
+ * ```
  */
 export const filter: {
-  <A, B extends A>(refinement: Refinement<NoInfer<A>, B>): (self: HashSet<A>) => HashSet<B>
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const numbersAndStringsHashSet: HashSet.HashSet<number | string> =
+   *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier")
+   *
+   * const stringRefinement: Predicate.Refinement<
+   *   string | number,
+   *   string
+   * > = (value) => typeof value === "string"
+   *
+   * const stringHashSet: HashSet.HashSet<string> = pipe(
+   *   numbersAndStringsHashSet,
+   *   HashSet.filter(stringRefinement)
+   * )
+   *
+   * assert.equal(
+   *   pipe(stringHashSet, HashSet.every(Predicate.isString)),
+   *   true
+   * )
+   * ```
+   */
+  <A, B extends A>(
+    refinement: Refinement<NoInfer<A>, B>
+  ): (self: HashSet<A>) => HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, type Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const filterPositiveNumbers: Predicate.Predicate<number> = (n) => n > 0
+   *
+   * assert.deepStrictEqual(
+   *   pipe(
+   *     HashSet.make(-2, -1, 0, 1, 2),
+   *     HashSet.filter(filterPositiveNumbers)
+   *   ),
+   *   HashSet.make(1, 2)
+   * )
+   * ```
+   */
   <A>(predicate: Predicate<NoInfer<A>>): (self: HashSet<A>) => HashSet<A>
-  <A, B extends A>(self: HashSet<A>, refinement: Refinement<A, B>): HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const numbersAndStringsHashSet: HashSet.HashSet<number | string> =
+   *   HashSet.make(1, "unos", 2, "two", 3, "trois", 4, "vier")
+   *
+   * const stringRefinement: Predicate.Refinement<
+   *   string | number,
+   *   string
+   * > = (value) => typeof value === "string"
+   *
+   * const stringHashSet: HashSet.HashSet<string> = HashSet.filter(
+   *   numbersAndStringsHashSet,
+   *   stringRefinement
+   * )
+   *
+   * assert.equal(HashSet.every(stringHashSet, Predicate.isString), true)
+   * ```
+   */
+  <A, B extends A>(
+    self: HashSet<A>,
+    refinement: Refinement<A, B>
+  ): HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe, type Predicate } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const filterPositiveNumbers: Predicate.Predicate<number> = (n) => n > 0
+   *
+   * assert.deepStrictEqual(
+   *   HashSet.filter(HashSet.make(-2, -1, 0, 1, 2), filterPositiveNumbers),
+   *   HashSet.make(1, 2)
+   * )
+   * ```
+   */
   <A>(self: HashSet<A>, predicate: Predicate<A>): HashSet<A>
 } = HS.filter
 
