@@ -1330,11 +1330,64 @@ export const forEach: {
 /**
  * Reduces the specified state over the values of the `HashSet`.
  *
+ * The time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category folding
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * const sum = (a: number, b: number): number => a + b
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(HashSet.make(0, 1, 2), HashSet.reduce(0, sum))
+ *
+ * // or with the pipe method
+ * HashSet.make(0, 1, 2).pipe(HashSet.reduce(0, sum))
+ *
+ * // or with `data-first` API
+ * HashSet.reduce(HashSet.make(0, 1, 2), 0, sum)
+ * ```
  */
 export const reduce: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.equal(
+   *   pipe(
+   *     HashSet.make(0, 1, 2),
+   *     HashSet.reduce(10, (accumulator, value) => accumulator + value)
+   *   ),
+   *   13
+   * )
+   * ```
+   */
   <A, Z>(zero: Z, f: (accumulator: Z, value: A) => Z): (self: HashSet<A>) => Z
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.equal(
+   *   HashSet.reduce(
+   *     HashSet.make(0, 1, 2),
+   *     -3,
+   *     (accumulator, value) => accumulator + value
+   *   ),
+   *   0
+   * )
+   * ```
+   */
   <A, Z>(self: HashSet<A>, zero: Z, f: (accumulator: Z, value: A) => Z): Z
 } = HS.reduce
 
