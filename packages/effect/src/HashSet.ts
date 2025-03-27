@@ -1136,11 +1136,64 @@ export const toggle: {
 /**
  * Maps over the values of the `HashSet` using the specified function.
  *
+ * The time complexity is of **`O(n)`**.
+ *
+ * @memberof HashSet
  * @since 2.0.0
  * @category mapping
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(
+ *   HashSet.make(0, 1, 2), // HashSet.HashSet<number>
+ *   HashSet.map(String) // HashSet.HashSet<string>
+ * )
+ *
+ * // or piped with the pipe method
+ * HashSet.make(0, 1, 2).pipe(HashSet.map(String))
+ *
+ * // or with `data-first` API
+ * HashSet.map(HashSet.make(0, 1, 2), String)
+ * ```
  */
 export const map: {
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   pipe(
+   *     HashSet.make(0, 1, 2), //    HashSet.HashSet<number>
+   *     HashSet.map((n) => String(n + 1)) // HashSet.HashSet<String>
+   *   ),
+   *   HashSet.make("1", "2", "3")
+   * )
+   * ```
+   */
   <A, B>(f: (a: A) => B): (self: HashSet<A>) => HashSet<B>
+
+  /**
+   * @example
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   HashSet.map(
+   *     HashSet.make(0, 1, 2), //    HashSet.HashSet<number>
+   *     (n) => String(n + 1)
+   *   ), // HashSet.HashSet<String>
+   *   HashSet.make("1", "2", "3")
+   * )
+   * ```
+   */
   <A, B>(self: HashSet<A>, f: (a: A) => B): HashSet<B>
 } = HS.map
 
