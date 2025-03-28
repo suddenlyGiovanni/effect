@@ -1088,12 +1088,105 @@ export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
 /**
  * Mutates the `HashSet` within the context of the provided function.
  *
+ * You can consider it a functional abstraction on top of the lower-level
+ * mutation primitives of {@linkcode beginMutation} `->` `mutable context` `->`
+ * {@linkcode endMutation}.
+ *
  * @memberof HashSet
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(
+ *   HashSet.make(1, 2, 3),
+ *   HashSet.mutate((set) => {
+ *     HashSet.add(set, 4)
+ *     HashSet.remove(set, 1)
+ *   })
+ * )
+ *
+ * // or piped with the pipe function
+ * HashSet.make(1, 2, 3).pipe(
+ *   HashSet.mutate((set) => {
+ *     HashSet.add(set, 4)
+ *     HashSet.remove(set, 1)
+ *   })
+ * )
+ *
+ * // or with data-first API
+ * HashSet.mutate(
+ *   HashSet.make(1, 2, 3),
+ *   (set) => {
+ *     HashSet.add(set, 4)
+ *     HashSet.remove(set, 1)
+ *   }
+ * )
+ * ```
+ *
  * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link beginMutation} {@link endMutation}
  */
 export const mutate: {
+  /**
+   * @example {@link mutate} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * // Create a set with initial values
+   * const immutableSet = HashSet.make(1, 2, 3)
+   *
+   * // Use mutate to perform multiple operations efficiently
+   * const result = pipe(
+   *   immutableSet,
+   *   HashSet.mutate((set) => {
+   *     assert.equal(Object.is(immutableSet, set), false)
+   *
+   *     // The set is temporarily mutable inside this function
+   *     const mod1 = HashSet.add(set, 4)
+   *     const mod2 = HashSet.remove(set, 1)
+   *     assert.equal(Object.is(mod1, mod2), true) // they are the same object by reference
+   *   })
+   * )
+   *
+   * // The original set is unchanged
+   * assert.equal(Object.is(immutableSet, result), false)
+   * assert.deepStrictEqual(HashSet.toValues(immutableSet).sort(), [1, 2, 3])
+   *
+   * // The result contains the mutations
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3, 4])
+   * ```
+   */
   <A>(f: (set: HashSet<A>) => void): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link mutate} `data-first` API
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * // Create a set with initial values
+   * const immutableSet = HashSet.make(1, 2, 3)
+   *
+   * // Use mutate with data-first API
+   * const result = HashSet.mutate(immutableSet, (set) => {
+   *   // The set is temporarily mutable inside this function
+   *   HashSet.add(set, 4)
+   *   HashSet.remove(set, 1)
+   * })
+   *
+   * // The original set is unchanged
+   * assert.equal(Object.is(immutableSet, result), false)
+   * assert.deepStrictEqual(HashSet.toValues(immutableSet).sort(), [1, 2, 3])
+   *
+   * // The result contains the mutations
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3, 4])
+   * ```
+   */
   <A>(self: HashSet<A>, f: (set: HashSet<A>) => void): HashSet<A>
 } = HS.mutate
 
