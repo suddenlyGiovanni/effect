@@ -1329,20 +1329,96 @@ export const remove: {
 } = HS.remove
 
 /**
- * Computes the set difference between this `HashSet` and the specified
- * `Iterable<A>`.
+ * Computes the set difference `(A - B)` between this `HashSet` and the
+ * specified `Iterable<A>`.
  *
  * Time complexity: **`O(n)`** where n is the number of elements in the set
  *
  * **NOTE**: the hash and equal of the values in both the set and the iterable
- * must be the same.
+ * must be the same; meaning we cannot compute a difference between a `HashSet
+ * of bananas` and a `HashSet of elephants` as they are not the same type and
+ * won't implement the Equal trait in the same way.
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(HashSet.make(1, 2, 3), HashSet.difference(HashSet.make(3, 4, 5)))
+ *
+ * // or piped with the pipe function
+ * HashSet.make(1, 2, 3).pipe(HashSet.difference(HashSet.make(3, 4, 5)))
+ *
+ * // or with data-first API
+ * HashSet.difference(HashSet.make(1, 2, 3), HashSet.make(3, 4, 5))
+ * ```
+ *
  * @see Other `HashSet` operations are {@link intersection} {@link union}
  */
 export const difference: {
+  /**
+   * @example {@link difference} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const thisSet = HashSet.make(1, 2, 3)
+   * const thatIterable = HashSet.make(3, 4, 5)
+   *
+   * // Compute the difference (elements in thisSet that are not in thatIterable)
+   * const result = pipe(thisSet, HashSet.difference(thatIterable))
+   *
+   * // The result contains only elements from thisSet that are not in thatIterable
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [1, 2])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(thisSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(thatIterable).sort(),
+   *   [3, 4, 5]
+   * )
+   *
+   * // You can also use arrays or other iterables
+   * const diffWithArray = pipe(thisSet, HashSet.difference([3, 4]))
+   * assert.deepStrictEqual(HashSet.toValues(diffWithArray).sort(), [1, 2])
+   * ```
+   */
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link difference} `data-first` API
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const thisSet = HashSet.make(1, 2, 3)
+   * const thatIterable = HashSet.make(3, 4, 5)
+   *
+   * // Compute the difference using data-first API
+   * const result = HashSet.difference(thisSet, thatIterable)
+   *
+   * // The result contains only elements from thisSet that are not in thatIterable
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [1, 2])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(thisSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(thatIterable).sort(),
+   *   [3, 4, 5]
+   * )
+   *
+   * // You can also compute the difference in the other direction
+   * const reverseResult = HashSet.difference(thatIterable, thisSet)
+   * assert.deepStrictEqual(HashSet.toValues(reverseResult).sort(), [4, 5])
+   * ```
+   */
   <A>(self: HashSet<A>, that: Iterable<A>): HashSet<A>
 } = HS.difference
 
