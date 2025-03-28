@@ -16,7 +16,7 @@
  * Use `HashSet` when you need:
  *
  * - A collection with no duplicate values
- * - Efficient membership testing (O(1) average complexity)
+ * - Efficient membership testing (**`O(1)`** average complexity)
  * - Set operations like union, intersection, and difference
  * - An immutable data structure that preserves functional programming patterns
  *
@@ -31,12 +31,12 @@
  *
  * ## Performance Characteristics
  *
- * - **Lookup** operations ({@link has}): **O(1)** average time complexity
- * - **Insertion** operations ({@link add}): **O(1)** average time complexity
- * - **Removal** operations ({@link remove}): **O(1)** average time complexity
- * - **Set** operations ({@link union}, {@link intersection}): **O(n)** where n is
+ * - **Lookup** operations ({@link has}): **`O(1)`** average time complexity
+ * - **Insertion** operations ({@link add}): **`O(1)`** average time complexity
+ * - **Removal** operations ({@link remove}): **`O(1)`** average time complexity
+ * - **Set** operations ({@link union}, {@link intersection}): **`O(n)`** where n is
  *   the size of the smaller set
- * - **Iteration**: **O(n)** where n is the size of the set
+ * - **Iteration**: **`O(n)`** where n is the size of the set
  *
  * The HashSet data structure implements the following traits:
  *
@@ -281,6 +281,8 @@ export const isHashSet: {
 /**
  * Creates an empty `HashSet`.
  *
+ * Time complexity: **`O(1)`**
+ *
  * @memberof HashSet
  * @since 2.0.0
  * @category constructors
@@ -302,12 +304,13 @@ export const isHashSet: {
  * ```
  *
  * @see Other `HashSet` constructors are {@link make} {@link fromIterable}
- * @todo Remember to add time complexity analysis
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
 /**
  * Creates a new `HashSet` from an iterable collection of values.
+ *
+ * Time complexity: **`O(n)`** where n is the number of elements in the iterable
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -390,13 +393,13 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  *   )
  * ) // Outputs: [1, 2, 3, 4]
  * ```
- *
- * @todo Remember to add time complexity analysis
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
 
 /**
  * Construct a new `HashSet` from a variable number of values.
+ *
+ * Time complexity: **`O(n)`** where n is the number of elements
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -479,12 +482,13 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  * ```
  *
  * @see Other `HashSet` constructors are {@link fromIterable} {@link empty}
- * @todo Remember to add time complexity analysis
  */
 export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<As[number]> = HS.make
 
 /**
  * Checks if the specified value exists in the `HashSet`.
+ *
+ * Time complexity: **`O(1)`** average
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -505,7 +509,6 @@ export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<A
  * ```
  *
  * @returns A `boolean` signaling the presence of the value in the HashSet
- * @todo Add time complexity analysis
  */
 export const has: {
   /**
@@ -546,6 +549,8 @@ export const has: {
 /**
  * Check if a predicate holds true for some `HashSet` element.
  *
+ * Time complexity: **`O(n)`** where n is the number of elements in the set
+ *
  * @memberof HashSet
  * @since 2.0.0
  * @category elements
@@ -568,8 +573,6 @@ export const has: {
  * // or with `data-first` API
  * HashSet.some(set, (n) => n > 0) // true
  * ```
- *
- * @todo Add time complexity analysis
  */
 export const some: {
   /**
@@ -626,7 +629,7 @@ export const some: {
 /**
  * Check if a predicate holds true for every `HashSet` element.
  *
- * Time complexity is **O(n)** as it need to traverse the whole HashSet
+ * Time complexity is **`O(n)`** as it needs to traverse the whole HashSet
  * collection
  *
  * @memberof HashSet
@@ -779,7 +782,7 @@ export const every: {
  *
  * **NOTE**: the hash and equal of both sets must be the same.
  *
- * Time complexity analysis is of `O(n)`
+ * Time complexity analysis is of **`O(n)`**
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -851,6 +854,8 @@ export const isSubset: {
 /**
  * Returns an `IterableIterator` of the values in the `HashSet`.
  *
+ * Time complexity: **`O(1)`**
+ *
  * @memberof HashSet
  * @since 2.0.0
  * @category getters
@@ -870,14 +875,13 @@ export const isSubset: {
  * ```
  *
  * @see check out the other getters {@link toValues} {@link size}
- * @todo Remember to add time complexity analysis
  */
 export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 
 /**
  * Returns an `Array` of the values within the `HashSet`.
  *
- * Time complexity of O(n)
+ * Time complexity: **`O(n)`** where n is the number of elements in the set
  *
  * @memberof HashSet
  * @since 3.13.0
@@ -898,12 +902,13 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
  * ```
  *
  * @see check out the other getters {@link values} {@link size}
- * @todo Remember to add time complexity analysis
  */
 export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(self))
 
 /**
  * Calculates the number of values in the `HashSet`.
+ *
+ * Time complexity: **`O(1)`**
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -923,7 +928,6 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
  * ```
  *
  * @see check out the other getters {@link values} {@link toValues}
- * @todo Remember to add time complexity analysis
  */
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
@@ -954,6 +958,8 @@ export const mutate: {
 /**
  * Adds a value to the `HashSet`.
  *
+ * Time complexity: **`O(1)`** average
+ *
  * @remarks
  * Remember that a `HashSet` is a collection of unique values, so adding a value
  * that already exists in the `HashSet` will not add a duplicate.
@@ -979,7 +985,6 @@ export const mutate: {
  * ```
  *
  * @see check out the other mutations {@link remove} {@link toggle}
- * @todo Remember to add time complexity analysis
  */
 export const add: {
   /**
@@ -1026,6 +1031,8 @@ export const add: {
 /**
  * Removes a value from the `HashSet`.
  *
+ * Time complexity: **`O(1)`** average
+ *
  * @memberof HashSet
  * @since 2.0.0
  * @example **Syntax**
@@ -1042,10 +1049,6 @@ export const add: {
  * // or with `data-first` API
  * HashSet.remove(HashSet.make(0, 1, 2), 0)
  * ```
- *
- * @todo Remind the user of the immutability guaranties of the HashSet data type
- *
- * @todo Add time complexity analysis
  */
 export const remove: {
   /**
@@ -1089,6 +1092,8 @@ export const remove: {
  * Computes the set difference between this `HashSet` and the specified
  * `Iterable<A>`.
  *
+ * Time complexity: **`O(n)`** where n is the number of elements in the set
+ *
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
@@ -1102,6 +1107,8 @@ export const difference: {
 /**
  * Returns a `HashSet` of values which are present in both this set and that
  * `Iterable<A>`.
+ *
+ * Time complexity: **`O(n)`** where n is the number of elements in the smaller set
  *
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
@@ -1117,6 +1124,8 @@ export const intersection: {
  * Computes the set union `(`self` + `that`)` between this `HashSet` and the
  * specified `Iterable<A>`.
  *
+ * Time complexity: **`O(n)`** where n is the number of elements in the set
+ *
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
@@ -1131,6 +1140,8 @@ export const union: {
  * Checks if a value is present in the `HashSet`. If it is present, the value
  * will be removed from the `HashSet`, otherwise the value will be added to the
  * `HashSet`.
+ *
+ * Time complexity: **`O(1)`** average
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -1151,9 +1162,6 @@ export const union: {
  *
  * @returns A new `HashSet` where the toggled value is being either added or
  *   removed based on the initial `HashSet` state.
- * @todo Add time space complexity analysis
- *
- * @todo Remember to point out that HasSet is an immutable data structure
  */
 export const toggle: {
   /**
