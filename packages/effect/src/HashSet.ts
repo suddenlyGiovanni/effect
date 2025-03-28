@@ -1,60 +1,9 @@
 /**
- * A `HashSet` is a collection of unique values with efficient lookup, insertion
- * and removal.
- *
- * ## Basic Usage
- *
- * HashSet solves the problem of maintaining an unsorted collection where each
- * value appears exactly once, with fast operations for checking membership and
- * adding/removing values.
- *
- * ### Value-Based Equality
- *
- * Unlike JavaScript's built-in {@link Set}, which checks for equality by
- * reference, `HashSet` supports _value-based equality_ through the {@link Equal}
- * interface. This allows objects with the same content to be treated as equal:
- *
- * ```ts
- * import { Data, HashSet, pipe } from "effect"
- *
- * // Creating a HashSet with objects that implement the Equal interface
- * const set: HashSet.HashSet<{
- *   readonly age: number
- *   readonly name: string
- * }> = pipe(
- *   HashSet.empty(),
- *   HashSet.add(Data.struct({ name: "Alice", age: 30 })),
- *   HashSet.add(Data.struct({ name: "Alice", age: 30 }))
- * )
- *
- * // HashSet recognizes them as equal, so only one element is stored
- * console.log(HashSet.size(set)) // Output: 1
- * ```
- *
- * However, without using the Data module (or another way to implement Equal):
- *
- * ```ts
- * import { HashSet, pipe } from "effect"
- *
- * // Objects that do NOT implement the Equal interface const set =
- * const set = pipe(
- *   HashSet.empty(),
- *   HashSet.add({ name: "Alice", age: 30 }),
- *   HashSet.add({ name: "Alice", age: 30 })
- * )
- *
- * // Objects are compared by reference, so two elements are stored
- * console.log(HashSet.size(set)) // Output: 2
- * ```
- *
- * ## When to Use
- *
- * Use HashSet when you need:
- *
- * - A collection with no duplicate values
- * - Efficient membership testing (O(1) average complexity)
- * - Set operations like union, intersection, and difference
- * - An immutable data structure that preserves functional programming patterns
+ * An immutable `HashSet` provides a collection of unique values. Once created,
+ * a `HashSet` cannot be modified; any operation that would alter the set
+ * instead returns a new `HashSet` with the changes. This immutability offers
+ * benefits like predictable state management and easier reasoning about your
+ * code.
  *
  * ## Operations Reference
  *
@@ -93,25 +42,170 @@
  * |              |                      |                                             |            |
  * | partitioning | {@link partition}    | Splits into two sets by a predicate         | O(n)       |
  *
- * ## Advanced Features
- *
- * HashSet provides operations for:
- *
- * - Transforming sets with map and flatMap
- * - Filtering elements with filter
- * - Combining sets with union, intersection and difference
- * - Performance optimizations via mutable operations in controlled contexts
- *
- * ## Performance Characteristics
- *
- * - Lookup operations (has): O(1) average time complexity
- * - Insertion operations (add): O(1) average time complexity
- * - Removal operations (remove): O(1) average time complexity
- * - Set operations (union, intersection): O(n) where n is the size of the smaller
- *   set
- * - Iteration: O(n) where n is the size of the set
- *
  * ## Notes
+ *
+ * **Immutability for Beginners:**
+ *
+ * When you perform an operation that seems like it should modify the `HashSet`
+ * (like {@link add `HashSet.add`} or {@link remove `HashSet.remove`}), it doesn't
+ * change the original set. Instead, it creates and returns a _new_ `HashSet`
+ * with the updated elements. This makes your code more predictable.
+ *
+ * ### Interoperability:
+ *
+ * #### With the Effect Library:
+ *
+ * This `HashSet` is designed to work seamlessly within the Effect ecosystem. It
+ * implements the {@link Iterable}, {@link Equal}, {@link Pipeable}, and
+ * {@link Inspectable} traits from Effect. This ensures compatibility with other
+ * Effect data structures and functionalities. For example, you can easily use
+ * Effect's `pipe` method to chain operations on the `HashSet`.
+ *
+ * **Equality of Elements with Effect's {@link Equal `Equal`} Trait:**
+ *
+ * This `HashSet` relies on Effect's {@link Equal} trait to determine the
+ * uniqueness of elements within the set. The way equality is checked depends on
+ * the type of the elements:
+ *
+ * - **Primitive Values:** For primitive JavaScript values like strings, numbers,
+ *   booleans, `null`, and `undefined`, equality is determined by their value
+ *   (similar to the `===` operator).
+ * - **Objects and Custom Types:** For objects and other custom types, equality is
+ *   determined by whether those types implement the {@link Equal} interface
+ *   themselves. If an element type implements `Equal`, the `HashSet` will
+ *   delegate to that implementation to perform the equality check. This allows
+ *   you to define custom logic for determining when two instances of your
+ *   objects should be considered equal based on their properties, rather than
+ *   just their object identity.
+ *
+ * ```ts
+ * import { Equal, Hash, HashSet } from "effect"
+ *
+ * class Person implements Equal.Equal {
+ *   constructor(
+ *     readonly id: number, // Unique identifier
+ *     readonly name: string,
+ *     readonly age: number
+ *   ) {}
+ *
+ *   // Define equality based on id, name, and age
+ *   [Equal.symbol](that: Equal.Equal): boolean {
+ *     if (that instanceof Person) {
+ *       return (
+ *         Equal.equals(this.id, that.id) &&
+ *         Equal.equals(this.name, that.name) &&
+ *         Equal.equals(this.age, that.age)
+ *       )
+ *     }
+ *     return false
+ *   }
+ *
+ *   // Generate a hash code based on the unique id
+ *   [Hash.symbol](): number {
+ *     return Hash.hash(this.id)
+ *   }
+ * }
+ *
+ * // Creating a HashSet with objects that implement the Equal interface
+ * const set = HashSet.empty().pipe(
+ *   HashSet.add(new Person(1, "Alice", 30)),
+ *   HashSet.add(new Person(1, "Alice", 30))
+ * )
+ *
+ * // HashSet recognizes them as equal, so only one element is stored
+ * console.log(HashSet.size(set))
+ * // Output: 1
+ * ```
+ *
+ * **Simplifying Equality and Hashing with `Data` and `Schema`:**
+ *
+ * Effect's {@link Data} and {@link Schema `Schema.Data`} modules offer powerful
+ * ways to automatically handle the implementation of both the {@link Equal} and
+ * {@link Hash} traits for your custom data structures.
+ *
+ * - **`Data` Module:** By using constructors like `Data.struct`, `Data.tuple`,
+ *   `Data.array`, or `Data.case` to define your data types, Effect
+ *   automatically generates the necessary implementations for value-based
+ *   equality and consistent hashing. This significantly reduces boilerplate and
+ *   ensures correctness.
+ *
+ * ```ts
+ * import { HashSet, Data, Equal } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * // Data.* implements the `Equal` traits for us
+ * const person1 = Data.struct({ id: 1, name: "Alice", age: 30 })
+ * const person2 = Data.struct({ id: 1, name: "Alice", age: 30 })
+ *
+ * assert(Equal.equals(person1, person2))
+ *
+ * const set = HashSet.empty().pipe(
+ *   HashSet.add(person1),
+ *   HashSet.add(person2)
+ * )
+ *
+ * // HashSet recognizes them as equal, so only one element is stored
+ * console.log(HashSet.size(set)) // Output: 1
+ * ```
+ *
+ * - **`Schema` Module:** When defining data schemas using the {@link Schema}
+ *   module, you can use `Schema.Data` to automatically include the `Equal` and
+ *   `Hash` traits in the decoded objects. This is particularly important when
+ *   working with `HashSet`. **For decoded objects to be correctly recognized as
+ *   equal within a `HashSet`, ensure that the schema for those objects is
+ *   defined using `Schema.Data`.**
+ *
+ * ```ts
+ * import { Equal, HashSet, Schema } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * // Schema.Data implements the `Equal` traits for us
+ * const PersonSchema = Schema.Data(
+ *   Schema.Struct({
+ *     id: Schema.Number,
+ *     name: Schema.String,
+ *     age: Schema.Number
+ *   })
+ * )
+ *
+ * const Person = Schema.decode(PersonSchema)
+ *
+ * const person1 = Person({ id: 1, name: "Alice", age: 30 })
+ * const person2 = Person({ id: 1, name: "Alice", age: 30 })
+ *
+ * assert(Equal.equals(person1, person2)) // Output: true
+ *
+ * const set = HashSet.empty().pipe(
+ *   HashSet.add(person1),
+ *   HashSet.add(person2)
+ * )
+ *
+ * // HashSet thanks to Schema.Data implementation of the `Equal` trait, recognizes the two Person as equal, so only one element is stored
+ * console.log(HashSet.size(set)) // Output: 1
+ * ```
+ *
+ * #### With the JavaScript Runtime:
+ *
+ * To interoperate with the regular JavaScript runtime, Effect's `HashSet`
+ * provides methods to access its elements in formats readily usable by
+ * JavaScript APIs: {@link values `HashSet.values`},
+ * {@link toValues `HashSet.toValues`}
+ *
+ * ```ts
+ * import { HashSet } from "effect"
+ *
+ * const hashSet: HashSet.HashSet<number> = HashSet.make(1, 2, 3)
+ *
+ * // Using HashSet.values to convert HashSet.HashSet<A> to IterableIterator<A>
+ * const iterable: IterableIterator<number> = HashSet.values(hashSet)
+ *
+ * console.log(...iterable) // Logs:  1 2 3
+ *
+ * // Using HashSet.toValues to convert HashSet.HashSet<A> to Array<A>
+ * const array: Array<number> = HashSet.toValues(hashSet)
+ *
+ * console.log(array) // Logs: [ 1, 2, 3 ]
+ * ```
  *
  * The HashSet data structure implements the following traits:
  *
