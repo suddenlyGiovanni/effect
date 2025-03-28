@@ -1,9 +1,49 @@
 /**
- * An immutable `HashSet` provides a collection of unique values. Once created,
- * a `HashSet` cannot be modified; any operation that would alter the set
- * instead returns a new `HashSet` with the changes. This immutability offers
- * benefits like predictable state management and easier reasoning about your
- * code.
+ * An immutable `HashSet` provides a collection of unique values with efficient
+ * lookup, insertion and removal. Once created, a `HashSet` cannot be modified;
+ * any operation that would alter the set instead returns a new `HashSet` with
+ * the changes. This immutability offers benefits like predictable state
+ * management and easier reasoning about your code.
+ *
+ * ## What Problem Does It Solve?
+ *
+ * `HashSet` solves the problem of maintaining an unsorted collection where each
+ * value appears exactly once, with fast operations for checking membership and
+ * adding/removing values.
+ *
+ * ## When to Use
+ *
+ * Use `HashSet` when you need:
+ *
+ * - A collection with no duplicate values
+ * - Efficient membership testing (O(1) average complexity)
+ * - Set operations like union, intersection, and difference
+ * - An immutable data structure that preserves functional programming patterns
+ *
+ * ## Advanced Features
+ *
+ * HashSet provides operations for:
+ *
+ * - Transforming sets with map and flatMap
+ * - Filtering elements with filter
+ * - Combining sets with union, intersection and difference
+ * - Performance optimizations via mutable operations in controlled contexts
+ *
+ * ## Performance Characteristics
+ *
+ * - **Lookup** operations ({@link has}): **O(1)** average time complexity
+ * - **Insertion** operations ({@link add}): **O(1)** average time complexity
+ * - **Removal** operations ({@link remove}): **O(1)** average time complexity
+ * - **Set** operations ({@link union}, {@link intersection}): **O(n)** where n is
+ *   the size of the smaller set
+ * - **Iteration**: **O(n)** where n is the size of the set
+ *
+ * The HashSet data structure implements the following traits:
+ *
+ * - {@link Iterable}: allows iterating over the values in the set
+ * - {@link Equal}: allows comparing two sets for value-based equality
+ * - {@link Pipeable}: allows chaining operations with the pipe operator
+ * - {@link Inspectable}: allows inspecting the contents of the set
  *
  * ## Operations Reference
  *
@@ -44,16 +84,7 @@
  *
  * ## Notes
  *
- * **Immutability for Beginners:**
- *
- * When you perform an operation that seems like it should modify the `HashSet`
- * (like {@link add `HashSet.add`} or {@link remove `HashSet.remove`}), it doesn't
- * change the original set. Instead, it creates and returns a _new_ `HashSet`
- * with the updated elements. This makes your code more predictable.
- *
- * ### Interoperability:
- *
- * #### With the Effect Library:
+ * ### Composability with the Effect Ecosystem:
  *
  * This `HashSet` is designed to work seamlessly within the Effect ecosystem. It
  * implements the {@link Iterable}, {@link Equal}, {@link Pipeable}, and
@@ -184,7 +215,7 @@
  * console.log(HashSet.size(set)) // Output: 1
  * ```
  *
- * #### With the JavaScript Runtime:
+ * ### Interoperability with the JavaScript Runtime:
  *
  * To interoperate with the regular JavaScript runtime, Effect's `HashSet`
  * provides methods to access its elements in formats readily usable by
@@ -207,12 +238,9 @@
  * console.log(array) // Logs: [ 1, 2, 3 ]
  * ```
  *
- * The HashSet data structure implements the following traits:
- *
- * - {@link Iterable}: allows iterating over the values in the set
- * - {@link Equal}: allows comparing two sets for value-based equality
- * - {@link Pipeable}: allows chaining operations with the pipe operator
- * - {@link Inspectable}: allows inspecting the contents of the set
+ * Be mindful of performance implications (both time and space complexity) when
+ * frequently converting between Effect's immutable HashSet and mutable
+ * JavaScript data structures, especially for large collections.
  *
  * @module HashSet
  * @since 2.0.0
