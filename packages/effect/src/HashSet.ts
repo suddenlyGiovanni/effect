@@ -272,6 +272,7 @@ export interface HashSet<out A> extends Iterable<A>, Equal, Pipeable, Inspectabl
 /**
  * @since 2.0.0
  * @category refinements
+ * @memberof HashSet
  */
 export const isHashSet: {
   <A>(u: Iterable<A>): u is HashSet<A>
@@ -934,6 +935,7 @@ export const size: <A>(self: HashSet<A>) => number = HS.size
 /**
  * Marks the `HashSet` as mutable.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const beginMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.beginMutation
@@ -941,6 +943,7 @@ export const beginMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.beginMutati
 /**
  * Marks the `HashSet` as immutable.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
@@ -948,6 +951,7 @@ export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
 /**
  * Mutates the `HashSet` within the context of the provided function.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const mutate: {
@@ -1097,6 +1101,7 @@ export const remove: {
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const difference: {
@@ -1113,6 +1118,7 @@ export const difference: {
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const intersection: {
@@ -1129,6 +1135,7 @@ export const intersection: {
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
+ * @memberof HashSet
  * @since 2.0.0
  */
 export const union: {
