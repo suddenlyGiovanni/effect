@@ -1117,13 +1117,10 @@ export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
  * )
  *
  * // or with data-first API
- * HashSet.mutate(
- *   HashSet.make(1, 2, 3),
- *   (set) => {
- *     HashSet.add(set, 4)
- *     HashSet.remove(set, 1)
- *   }
- * )
+ * HashSet.mutate(HashSet.make(1, 2, 3), (set) => {
+ *   HashSet.add(set, 4)
+ *   HashSet.remove(set, 1)
+ * })
  * ```
  *
  * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link beginMutation} {@link endMutation}
@@ -1154,7 +1151,10 @@ export const mutate: {
    *
    * // The original set is unchanged
    * assert.equal(Object.is(immutableSet, result), false)
-   * assert.deepStrictEqual(HashSet.toValues(immutableSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(immutableSet).sort(),
+   *   [1, 2, 3]
+   * )
    *
    * // The result contains the mutations
    * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3, 4])
@@ -1181,7 +1181,10 @@ export const mutate: {
    *
    * // The original set is unchanged
    * assert.equal(Object.is(immutableSet, result), false)
-   * assert.deepStrictEqual(HashSet.toValues(immutableSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(immutableSet).sort(),
+   *   [1, 2, 3]
+   * )
    *
    * // The result contains the mutations
    * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3, 4])
