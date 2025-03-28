@@ -990,10 +990,49 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
 /**
- * Marks the `HashSet` as mutable.
+ * Creates a new mutable version of the `HashSet`
+ *
+ * When a `HashSet` is mutable, operations like {@link add} and {@link remove}
+ * modify the data structure in place instead of creating a new one, which is
+ * more efficient when performing multiple operations.
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @example
+ *
+ * ```ts
+ * import { HashSet } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * const UPPER_BOUND = 10_000
+ *
+ * const immutableSet = HashSet.empty<number>().pipe(HashSet.add(0))
+ *
+ * // Create a mutable version of the immutableSet
+ * const mutableSet = HashSet.beginMutation(immutableSet)
+ *
+ * for (let i = 1; i < UPPER_BOUND; i++) {
+ *   // Operations now modify the set in place instead of creating new instances
+ *   // This is more efficient when making multiple changes
+ *   const pointerToMutableSet = HashSet.add(mutableSet, i)
+ *
+ *   // the two sets have the same identity, hence `add` is mutating mutableSet and not returning a new HashSet instance
+ *   assert(Object.is(mutableSet, pointerToMutableSet))
+ *   assert.equal(HashSet.has(mutableSet, i), true) // `i` is in the mutableSet
+ *   assert.equal(HashSet.has(immutableSet, i), false) // `i` is not in the immutableSet
+ * }
+ *
+ * const next = UPPER_BOUND + 1
+ * // When done, mark the set as immutable again
+ * HashSet.endMutation(mutableSet).pipe(
+ *   HashSet.add(next) // since this returns a new HashSet, it will not be logged as part of the mutableSet
+ * )
+ * assert.equal(HashSet.has(mutableSet, next), false)
+ *
+ * console.log(HashSet.toValues(immutableSet)) // [0]
+ * console.log(HashSet.toValues(mutableSet).sort((a, b) => a - b)) // [0, 1, 2, 3, ...rest]
+ * ```
+ *
  * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link endMutation} {@link mutate}
  */
 export const beginMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.beginMutation
