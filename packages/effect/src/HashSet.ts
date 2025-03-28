@@ -429,7 +429,7 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  *
  *   // Generate a hash code based on the sum of the character's name and trait
  *   [Hash.symbol](): number {
- *     throw Hash.hash(this.name + this.trait)
+ *     return Hash.hash(this.name + this.trait)
  *   }
  *
  *   static readonly of = (name: string, trait: string): Character => {
@@ -1019,7 +1019,7 @@ export const add: {
    *
    * assert.deepStrictEqual(HashSet.toValues(withTwoTwo), Array.of(0, 1, 2))
    * ```
-   */ 
+   */
   <A>(self: HashSet<A>, value: A): HashSet<A>
 } = HS.add
 
