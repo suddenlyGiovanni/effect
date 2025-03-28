@@ -302,7 +302,7 @@ export const isHashSet: {
  * ```
  *
  * @see Other `HashSet` constructors are {@link make} {@link fromIterable}
- * @todo Remember to add time complexity analisys
+ * @todo Remember to add time complexity analysis
  */
 export const empty: <A = never>() => HashSet<A> = HS.empty
 
@@ -391,7 +391,7 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  * ) // Outputs: [1, 2, 3, 4]
  * ```
  *
- * @todo Remember to add time complexity analisys
+ * @todo Remember to add time complexity analysis
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
 
@@ -479,7 +479,7 @@ export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIte
  * ```
  *
  * @see Other `HashSet` constructors are {@link fromIterable} {@link empty}
- * @todo Remember to add time complexity analisys
+ * @todo Remember to add time complexity analysis
  */
 export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<As[number]> = HS.make
 
@@ -505,7 +505,7 @@ export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<A
  * ```
  *
  * @returns A `boolean` signaling the presence of the value in the HashSet
- * @todo Add time complexity analisys
+ * @todo Add time complexity analysis
  */
 export const has: {
   /**
@@ -569,7 +569,7 @@ export const has: {
  * HashSet.some(set, (n) => n > 0) // true
  * ```
  *
- * @todo Add time complexity analisys
+ * @todo Add time complexity analysis
  */
 export const some: {
   /**
@@ -676,7 +676,7 @@ export const some: {
  * HashSet.every(set, (n) => n >= 0) // true
  * ```
  *
- * @returns A boolean once it has evaluated that whole collecion fullfill the
+ * @returns A boolean once it has evaluated that whole collection fulfill the
  *   Predicate function
  */
 export const every: {
@@ -779,7 +779,7 @@ export const every: {
  *
  * **NOTE**: the hash and equal of both sets must be the same.
  *
- * Time complexity analisys is of `O(n)`
+ * Time complexity analysis is of `O(n)`
  *
  * @memberof HashSet
  * @since 2.0.0
@@ -869,8 +869,8 @@ export const isSubset: {
  * }
  * ```
  *
- * @see check out the other gettes {@link toValues} {@link size}
- * @todo Remember to add time complexity analisys
+ * @see check out the other getters {@link toValues} {@link size}
+ * @todo Remember to add time complexity analysis
  */
 export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 
@@ -897,8 +897,8 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
  * )
  * ```
  *
- * @see check out the other gettes {@link values} {@link size}
- * @todo Remember to add time complexity analisys
+ * @see check out the other getters {@link values} {@link size}
+ * @todo Remember to add time complexity analysis
  */
 export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(self))
 
@@ -922,8 +922,8 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
  * )
  * ```
  *
- * @see check out the other gettes {@link values} {@link toValues}
- * @todo Remember to add time complexity analisys
+ * @see check out the other getters {@link values} {@link toValues}
+ * @todo Remember to add time complexity analysis
  */
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
@@ -979,7 +979,7 @@ export const mutate: {
  * ```
  *
  * @see check out the other mutations {@link remove} {@link toggle}
- * @todo Remember to add time complexity analisys
+ * @todo Remember to add time complexity analysis
  */
 export const add: {
   /**
@@ -1043,9 +1043,9 @@ export const add: {
  * HashSet.remove(HashSet.make(0, 1, 2), 0)
  * ```
  *
- * @todo Remind the user of the immutability garanties of the HashSet data type
+ * @todo Remind the user of the immutability guaranties of the HashSet data type
  *
- * @todo Add time complexity analisys
+ * @todo Add time complexity analysis
  */
 export const remove: {
   /**
@@ -1151,7 +1151,7 @@ export const union: {
  *
  * @returns A new `HashSet` where the toggled value is being either added or
  *   removed based on the initial `HashSet` state.
- * @todo Add time space complexity analisys
+ * @todo Add time space complexity analysis
  *
  * @todo Remember to point out that HasSet is an immutable data structure
  */
