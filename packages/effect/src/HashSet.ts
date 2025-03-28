@@ -275,7 +275,56 @@ export interface HashSet<out A> extends Iterable<A>, Equal, Pipeable, Inspectabl
  * @category refinements
  */
 export const isHashSet: {
+  /**
+   * Type guard function to determine if a given iterable is a `HashSet`.
+   *
+   * This overload preserves the type of the iterable's elements.
+   *
+   * @example
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   *
+   * const numberIterable: Iterable<1 | 2 | 3> = [1, 2, 3]
+   *
+   * if (
+   *   // if passed an Iterable<A> the type guard that preserves the type parameter <A>
+   *   HashSet.isHashSet(numberIterable)
+   * ) {
+   *   const HashSet: HashSet.HashSet<1 | 2 | 3> = numberIterable
+   * }
+   * ```
+   *
+   * @param u - The iterable input to be checked.
+   * @returns A boolean indicating whether the provided iterable is a `HashSet`.
+   */
   <A>(u: Iterable<A>): u is HashSet<A>
+
+  /**
+   * Type guard function that checks if the provided value is a `HashSet` of
+   * unknown type.
+   *
+   * @example
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * // Check if a value is a HashSet
+   * const set = HashSet.make(1, 2, 3)
+   *
+   * assert.equal(HashSet.isHashSet(set), true) // true
+   * assert.equal(HashSet.isHashSet(HashSet.empty()), true)
+   *
+   * // Works with any type
+   * assert.equal(HashSet.isHashSet(null), false) // false
+   * assert.equal(HashSet.isHashSet({}), false) // false
+   * assert.equal(HashSet.isHashSet([1, 2, 3]), false) // false
+   * ```
+   *
+   * @param u - The value to check.
+   * @returns A boolean indicating whether the value is a `HashSet<unknown>`.
+   */
   (u: unknown): u is HashSet<unknown>
 } = HS.isHashSet
 
