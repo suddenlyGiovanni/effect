@@ -1,4 +1,6 @@
 /**
+ * # HashSet
+ *
  * An immutable `HashSet` provides a collection of unique values with efficient
  * lookup, insertion and removal. Once created, a `HashSet` cannot be modified;
  * any operation that would alter the set instead returns a new `HashSet` with
@@ -14,7 +16,6 @@
  * ## When to Use
  *
  * Use `HashSet` when you need:
- *
  * - A collection with no duplicate values
  * - Efficient membership testing (**`O(1)`** average complexity)
  * - Set operations like union, intersection, and difference
@@ -23,7 +24,6 @@
  * ## Advanced Features
  *
  * HashSet provides operations for:
- *
  * - Transforming sets with map and flatMap
  * - Filtering elements with filter
  * - Combining sets with union, intersection and difference
@@ -270,9 +270,9 @@ export interface HashSet<out A> extends Iterable<A>, Equal, Pipeable, Inspectabl
 }
 
 /**
+ * @memberof HashSet
  * @since 2.0.0
  * @category refinements
- * @memberof HashSet
  */
 export const isHashSet: {
   <A>(u: Iterable<A>): u is HashSet<A>
@@ -394,6 +394,8 @@ export const empty: <A = never>() => HashSet<A> = HS.empty
  *   )
  * ) // Outputs: [1, 2, 3, 4]
  * ```
+ *
+ * @see Other `HashSet` constructors are {@link empty} {@link make}
  */
 export const fromIterable: <A>(elements: Iterable<A>) => HashSet<A> = HS.fromIterable
 
@@ -510,6 +512,7 @@ export const make: <As extends ReadonlyArray<any>>(...elements: As) => HashSet<A
  * ```
  *
  * @returns A `boolean` signaling the presence of the value in the HashSet
+ * @see Other `HashSet` elements are {@link some} {@link every} {@link isSubset}
  */
 export const has: {
   /**
@@ -574,6 +577,8 @@ export const has: {
  * // or with `data-first` API
  * HashSet.some(set, (n) => n > 0) // true
  * ```
+ *
+ * @see Other `HashSet` elements are {@link has} {@link every} {@link isSubset}
  */
 export const some: {
   /**
@@ -682,6 +687,7 @@ export const some: {
  *
  * @returns A boolean once it has evaluated that whole collection fulfill the
  *   Predicate function
+ * @see Other `HashSet` elements are {@link has} {@link some} {@link isSubset}
  */
 export const every: {
   /**
@@ -809,6 +815,8 @@ export const every: {
  * HashSet.isSubset(set1, set2) // false
  * HashSet.isSubset(set1, set3) // true)
  * ```
+ *
+ * @see Other `HashSet` elements are {@link has} {@link some} {@link every}
  */
 export const isSubset: {
   /**
@@ -875,7 +883,7 @@ export const isSubset: {
  * }
  * ```
  *
- * @see check out the other getters {@link toValues} {@link size}
+ * @see Other `HashSet` getters are {@link toValues} {@link size}
  */
 export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
 
@@ -902,7 +910,7 @@ export const values: <A>(self: HashSet<A>) => IterableIterator<A> = HS.values
  * )
  * ```
  *
- * @see check out the other getters {@link values} {@link size}
+ * @see Other `HashSet` getters are {@link values} {@link size}
  */
 export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(self))
 
@@ -928,7 +936,7 @@ export const toValues = <A>(self: HashSet<A>): Array<A> => Array.from(values(sel
  * )
  * ```
  *
- * @see check out the other getters {@link values} {@link toValues}
+ * @see Other `HashSet` getters are {@link values} {@link toValues}
  */
 export const size: <A>(self: HashSet<A>) => number = HS.size
 
@@ -937,6 +945,7 @@ export const size: <A>(self: HashSet<A>) => number = HS.size
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link endMutation} {@link mutate}
  */
 export const beginMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.beginMutation
 
@@ -945,6 +954,7 @@ export const beginMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.beginMutati
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link beginMutation} {@link mutate}
  */
 export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
 
@@ -953,6 +963,7 @@ export const endMutation: <A>(self: HashSet<A>) => HashSet<A> = HS.endMutation
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` mutations are {@link add} {@link remove} {@link toggle} {@link beginMutation} {@link endMutation}
  */
 export const mutate: {
   <A>(f: (set: HashSet<A>) => void): (self: HashSet<A>) => HashSet<A>
@@ -988,7 +999,7 @@ export const mutate: {
  * HashSet.add(HashSet.empty(), 0)
  * ```
  *
- * @see check out the other mutations {@link remove} {@link toggle}
+ * @see Other `HashSet` mutations are {@link remove} {@link toggle} {@link beginMutation} {@link endMutation} {@link mutate}
  */
 export const add: {
   /**
@@ -1053,6 +1064,8 @@ export const add: {
  * // or with `data-first` API
  * HashSet.remove(HashSet.make(0, 1, 2), 0)
  * ```
+ *
+ * @see Other `HashSet` mutations are {@link add} {@link toggle} {@link beginMutation} {@link endMutation} {@link mutate}
  */
 export const remove: {
   /**
@@ -1103,6 +1116,7 @@ export const remove: {
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` operations are {@link intersection} {@link union}
  */
 export const difference: {
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
@@ -1113,13 +1127,15 @@ export const difference: {
  * Returns a `HashSet` of values which are present in both this set and that
  * `Iterable<A>`.
  *
- * Time complexity: **`O(n)`** where n is the number of elements in the smaller set
+ * Time complexity: **`O(n)`** where n is the number of elements in the smaller
+ * set
  *
  * **NOTE**: the hash and equal of the values in both the set and the iterable
  * must be the same.
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` operations are {@link difference} {@link union}
  */
 export const intersection: {
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
@@ -1127,7 +1143,7 @@ export const intersection: {
 } = HS.intersection
 
 /**
- * Computes the set union `(`self` + `that`)` between this `HashSet` and the
+ * Computes the set union `(`self`+`that`)` between this `HashSet` and the
  * specified `Iterable<A>`.
  *
  * Time complexity: **`O(n)`** where n is the number of elements in the set
@@ -1137,6 +1153,7 @@ export const intersection: {
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @see Other `HashSet` operations are {@link difference} {@link intersection}
  */
 export const union: {
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
@@ -1169,6 +1186,7 @@ export const union: {
  *
  * @returns A new `HashSet` where the toggled value is being either added or
  *   removed based on the initial `HashSet` state.
+ * @see Other `HashSet` mutations are {@link add} {@link remove} {@link beginMutation} {@link endMutation} {@link mutate}
  */
 export const toggle: {
   /**
