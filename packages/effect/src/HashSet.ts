@@ -693,7 +693,7 @@ export const some: {
  * @example **syntax** with {@link Refinement}
  *
  * ```ts
- * import { HashSet, pipe } from "effect"
+ * import { HashSet, pipe, Predicate } from "effect"
  *
  * const numberOrString = HashSet.make(1, "1", "one", "uno")
  *
