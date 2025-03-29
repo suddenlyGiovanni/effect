@@ -1516,7 +1516,7 @@ export const intersection: {
 } = HS.intersection
 
 /**
- * Computes the set union `(`self`+`that`)` between this `HashSet` and the
+ * Computes the set union `( self ∪ that )` between this `HashSet` and the
  * specified `Iterable<A>`.
  *
  * Time complexity: **`O(n)`** where n is the number of elements in the set
@@ -1526,10 +1526,78 @@ export const intersection: {
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(HashSet.make(1, 2, 3), HashSet.union(HashSet.make(3, 4, 5)))
+ *
+ * // or piped with the pipe function
+ * HashSet.make(1, 2, 3).pipe(HashSet.union(HashSet.make(3, 4, 5)))
+ *
+ * // or with data-first API
+ * HashSet.union(HashSet.make(1, 2, 3), HashSet.make(3, 4, 5))
+ * ```
+ *
  * @see Other `HashSet` operations are {@link difference} {@link intersection}
  */
 export const union: {
+  /**
+   * @example {@link union} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const selfSet = HashSet.make(1, 2, 3)
+   * const thatIterable = HashSet.make(3, 4, 5)
+   *
+   * // Compute the union (all elements from both sets)
+   * const result = pipe(selfSet, HashSet.union(thatIterable))
+   *
+   * // The result contains all elements from both sets (without duplicates)
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [1, 2, 3, 4, 5])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(selfSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(HashSet.toValues(thatIterable).sort(), [3, 4, 5])
+   *
+   * // You can also use arrays or other iterables
+   * const unionWithArray = pipe(selfSet, HashSet.union([4, 5, 6]))
+   * assert.deepStrictEqual(HashSet.toValues(unionWithArray).sort(), [1, 2, 3, 4, 5, 6])
+   * ```
+   */
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link union} `data-first` API
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const selfSet = HashSet.make(1, 2, 3)
+   * const thatIterable = HashSet.make(3, 4, 5)
+   *
+   * // Compute the union using data-first API
+   * const result = HashSet.union(selfSet, thatIterable)
+   *
+   * // The result contains all elements from both sets (without duplicates)
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [1, 2, 3, 4, 5])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(selfSet).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(HashSet.toValues(thatIterable).sort(), [3, 4, 5])
+   *
+   * // You can also use arrays or other iterables
+   * const unionWithArray = HashSet.union(selfSet, [4, 5, 6])
+   * assert.deepStrictEqual(HashSet.toValues(unionWithArray).sort(), [1, 2, 3, 4, 5, 6])
+   * ```
+   */
   <A>(self: HashSet<A>, that: Iterable<A>): HashSet<A>
 } = HS.union
 
