@@ -1424,7 +1424,7 @@ export const difference: {
 
 /**
  * Returns a `HashSet` of values which are present in both this set and that
- * `Iterable<A>`.
+ * `Iterable<A>`. Computes set intersection (A ∩ B)
  *
  * Time complexity: **`O(n)`** where n is the number of elements in the smaller
  * set
@@ -1434,10 +1434,84 @@ export const difference: {
  *
  * @memberof HashSet
  * @since 2.0.0
+ * @example **Syntax**
+ *
+ * ```ts
+ * import { HashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(HashSet.make(1, 2, 3), HashSet.intersection(HashSet.make(2, 3, 4)))
+ *
+ * // or piped with the pipe function
+ * HashSet.make(1, 2, 3).pipe(HashSet.intersection(HashSet.make(2, 3, 4)))
+ *
+ * // or with data-first API
+ * HashSet.intersection(HashSet.make(1, 2, 3), HashSet.make(2, 3, 4))
+ * ```
+ *
  * @see Other `HashSet` operations are {@link difference} {@link union}
  */
 export const intersection: {
+  /**
+   * @example {@link intersection} `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { HashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const set1 = HashSet.make(1, 2, 3)
+   * const set2 = HashSet.make(2, 3, 4)
+   *
+   * // Compute the intersection (elements that are in both sets)
+   * const result = pipe(set1, HashSet.intersection(set2))
+   *
+   * // The result contains only elements that are in both sets
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(set1).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(HashSet.toValues(set2).sort(), [2, 3, 4])
+   *
+   * // You can also use arrays or other iterables
+   * const intersectWithArray = pipe(set1, HashSet.intersection([2, 3, 5]))
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(intersectWithArray).sort(),
+   *   [2, 3]
+   * )
+   * ```
+   */
   <A>(that: Iterable<A>): (self: HashSet<A>) => HashSet<A>
+
+  /**
+   * @example {@link intersection} `data-first` API
+   *
+   * ```ts
+   * import { HashSet } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * // Create two sets with some overlapping elements
+   * const set1 = HashSet.make(1, 2, 3)
+   * const set2 = HashSet.make(2, 3, 4)
+   *
+   * // Compute the intersection using data-first API
+   * const result = HashSet.intersection(set1, set2)
+   *
+   * // The result contains only elements that are in both sets
+   * assert.deepStrictEqual(HashSet.toValues(result).sort(), [2, 3])
+   *
+   * // The original sets are unchanged
+   * assert.deepStrictEqual(HashSet.toValues(set1).sort(), [1, 2, 3])
+   * assert.deepStrictEqual(HashSet.toValues(set2).sort(), [2, 3, 4])
+   *
+   * // You can also use arrays or other iterables
+   * const intersectWithArray = HashSet.intersection(set1, [2, 3, 5])
+   * assert.deepStrictEqual(
+   *   HashSet.toValues(intersectWithArray).sort(),
+   *   [2, 3]
+   * )
+   * ```
+   */
   <A>(self: HashSet<A>, that: Iterable<A>): HashSet<A>
 } = HS.intersection
 
