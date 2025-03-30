@@ -260,11 +260,75 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
 ): MutableHashSet<Keys[number]> => fromIterable(keys)
 
 /**
+ * Adds a value to the `MutableHashSet`.
+ *
+ * Time complexity: **`O(1)`** average
+ *
+ * **Syntax**
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * // with data-last, a.k.a. pipeable API
+ * pipe(
+ *   MutableHashSet.empty(),
+ *   MutableHashSet.add(0),
+ *   MutableHashSet.add(0)
+ * )
+ *
+ * // or piped with the pipe function
+ * MutableHashSet.empty().pipe(MutableHashSet.add(0))
+ *
+ * // or with data-first API
+ * MutableHashSet.add(MutableHashSet.empty(), 0)
+ * ```
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
  */
 export const add: {
+  /**
+   * `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { MutableHashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * assert.deepStrictEqual(
+   *   pipe(
+   *     MutableHashSet.empty<number>(), // MutableHashSet.MutableHashSet<number>
+   *     MutableHashSet.add(0),
+   *     MutableHashSet.add(1),
+   *     MutableHashSet.add(1),
+   *     MutableHashSet.add(2),
+   *     MutableHashSet.toValues
+   *   ),
+   *   Array.of(0, 1, 2)
+   * )
+   * ```
+   */
   <V>(key: V): (self: MutableHashSet<V>) => MutableHashSet<V>
+
+  /**
+   * `data-first` API
+   *
+   * ```ts
+   * import { MutableHashSet, pipe } from "effect"
+   * import assert from "node:assert/strict"
+   *
+   * const empty = MutableHashSet.empty<number>()
+   * const withZero = MutableHashSet.add(empty, 0)
+   * const withOne = MutableHashSet.add(withZero, 1)
+   * const withTwo = MutableHashSet.add(withOne, 2)
+   * const withTwoTwo = MutableHashSet.add(withTwo, 2)
+   *
+   * assert.deepStrictEqual(
+   *   MutableHashSet.toValues(withTwoTwo),
+   *   Array.of(0, 1, 2)
+   * )
+   * ```
+   */
   <V>(self: MutableHashSet<V>, key: V): MutableHashSet<V>
 } = Dual.dual<
   <V>(key: V) => (self: MutableHashSet<V>) => MutableHashSet<V>,
