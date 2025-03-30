@@ -60,6 +60,17 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
 /**
  * @since 2.0.0
  * @category constructors
+ * @memberOf MutableHashSet
+ * @example
+ *
+ * ```ts
+ * import { MutableHashSet } from "effect"
+ *
+ * type T = unknown // replace with your type
+ *
+ * // in places where the type cant be inferred, replace with your type
+ * const set: MutableHashSet.MutableHashSet<T> = MutableHashSet.empty<T>()
+ * ```
  */
 export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHashMap.empty())
 
