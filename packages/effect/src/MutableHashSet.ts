@@ -1,8 +1,8 @@
 /**
  * Mutable sibling of {@link module:HashSet}
  *
- * @since 2.0.0
  * @module MutableHashSet
+ * @since 2.0.0
  * @since 2.0.0
  */
 import * as Dual from "./Function.js"
@@ -73,7 +73,8 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
  * const set: MutableHashSet.MutableHashSet<T> = MutableHashSet.empty<T>()
  * ```
  *
- * See also: Other `MutableHashSet` constructors are {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
+ * See also: Other `MutableHashSet` constructors are
+ * {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
  */
 export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHashMap.empty())
 
@@ -286,6 +287,7 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
  * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
+ * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear} {@link module:MutableHashSet.has}
  */
 export const add: {
   /**
@@ -358,6 +360,7 @@ export const add: {
  * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
+ * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const has: {
   /**
@@ -399,11 +402,65 @@ export const has: {
 >(2, (self, key) => MutableHashMap.has(self.keyMap, key))
 
 /**
+ * Removes a value from the `MutableHashSet`.
+ *
+ * Time complexity: **`O(1)`** average
+ *
+ * **Syntax**
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(MutableHashSet.make(0, 1, 2), MutableHashSet.remove(0))
+ *
+ * // or piped with the pipe function
+ * MutableHashSet.make(0, 1, 2).pipe(MutableHashSet.remove(0))
+ *
+ * // or with `data-first` API
+ * MutableHashSet.remove(MutableHashSet.make(0, 1, 2), 0)
+ * ```
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
+ * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const remove: {
+  /**
+   * `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import { MutableHashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const set = MutableHashSet.make(0, 1, 2)
+   * const result = pipe(set, MutableHashSet.remove(0))
+   *
+   * assert.equal(pipe(result, MutableHashSet.has(0)), false) // it has correctly removed 0
+   * assert.equal(pipe(set, MutableHashSet.has(0)), true) // it does not mutate the original set
+   * assert.equal(pipe(result, MutableHashSet.has(1)), true)
+   * assert.equal(pipe(result, MutableHashSet.has(2)), true)
+   * ```
+   */
   <V>(key: V): (self: MutableHashSet<V>) => MutableHashSet<V>
+
+  /**
+   * `data-first` API
+   *
+   * ```ts
+   * import { MutableHashSet, pipe } from "effect"
+   * import * as assert from "node:assert/strict"
+   *
+   * const set = MutableHashSet.make(0, 1, 2)
+   * const result = MutableHashSet.remove(set, 0)
+   *
+   * assert.equal(MutableHashSet.has(result, 0), false) // it has correctly removed 0
+   * assert.equal(MutableHashSet.has(set, 0), true) // it does not mutate the original set
+   * assert.equal(MutableHashSet.has(result, 1), true)
+   * assert.equal(MutableHashSet.has(result, 2), true)
+   * ```
+   */
   <V>(self: MutableHashSet<V>, key: V): MutableHashSet<V>
 } = Dual.dual<
   <V>(key: V) => (self: MutableHashSet<V>) => MutableHashSet<V>,
@@ -413,11 +470,13 @@ export const remove: {
 /**
  * @since 2.0.0
  * @category elements
+ * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.clear}
  */
 export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(self.keyMap)
 
 /**
  * @since 2.0.0
  * @category elements
+ * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size}
  */
 export const clear = <V>(self: MutableHashSet<V>): MutableHashSet<V> => (MutableHashMap.clear(self.keyMap), self)
