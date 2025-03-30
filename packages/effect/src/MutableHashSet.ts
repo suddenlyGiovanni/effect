@@ -1,5 +1,8 @@
 /**
+ * Mutable sibling of {@link module:HashSet}
+ *
  * @since 2.0.0
+ * @module MutableHashSet
  */
 import * as Dual from "./Function.js"
 import { format, type Inspectable, NodeInspectSymbol, toJSON } from "./Inspectable.js"
