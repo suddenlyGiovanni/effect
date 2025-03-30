@@ -58,9 +58,9 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
 }
 
 /**
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category constructors
- * @memberOf MutableHashSet
  * @example
  *
  * ```ts
@@ -77,8 +77,90 @@ export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHash
 /**
  * Creates a new `MutableHashSet` from an iterable collection of values.
  *
+ * Time complexity: **`O(n)`** where n is the number of elements in the iterable
+ *
+ * Creating a MutableHashSet from an `Array`
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     [1, 2, 3, 4, 5, 1, 2, 3], // Array<number> is an Iterable<number>;  Note the duplicates.
+ *     MutableHashSet.fromIterable,
+ *     MutableHashSet.toValues
+ *   )
+ * ) // Output: [1, 2, 3, 4, 5]
+ * ```
+ *
+ * Creating a MutableHashSet from a `Set`
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     new Set(["apple", "banana", "orange", "apple"]), // Set<string> is an Iterable<string>
+ *     MutableHashSet.fromIterable,
+ *     MutableHashSet.toValues
+ *   )
+ * ) // Output: ["apple", "banana", "orange"]
+ * ```
+ *
+ * Creating a MutableHashSet from a `Generator`
+ *
+ * ```ts
+ * import { MutableHashSet } from "effect"
+ *
+ * // Generator functions return iterables
+ * function* fibonacci(n: number): Generator<number, void, unknown> {
+ *   let [a, b] = [0, 1]
+ *   for (let i = 0; i < n; i++) {
+ *     yield a
+ *     ;[a, b] = [b, a + b]
+ *   }
+ * }
+ *
+ * // Create a MutableHashSet from the first 10 Fibonacci numbers
+ * const fibonacciSet = MutableHashSet.fromIterable(fibonacci(10))
+ *
+ * console.log(MutableHashSet.toValues(fibonacciSet))
+ * // Outputs: [0, 1, 2, 3, 5, 8, 13, 21, 34] but in unsorted order
+ * ```
+ *
+ * Creating a MutableHashSet from another `MutableHashSet`
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     // since MutableHashSet implements the Iterable interface, we can use it to create a new MutableHashSet
+ *     MutableHashSet.make(1, 2, 3, 4),
+ *     MutableHashSet.fromIterable,
+ *     MutableHashSet.toValues // turns the HashSet back into an array
+ *   )
+ * ) // Output: [1, 2, 3, 4]
+ * ```
+ *
+ * Creating a MutableHashSet from other Effect's data structures like `Chunk`
+ *
+ * ```ts
+ * import { Chunk, MutableHashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     Chunk.make(1, 2, 3, 4), // Iterable<number>
+ *     MutableHashSet.fromIterable,
+ *     MutableHashSet.toValues // turns the MutableHashSet back into an array
+ *   )
+ * ) // Outputs: [1, 2, 3, 4]
+ * ```
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category constructors
+ * @see Other `MutableHashSet` constructors are {@link module:MutableHashSet.empty} {@link module:MutableHashSet.make}
  */
 export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
   fromHashMap(MutableHashMap.fromIterable(Array.from(keys).map((k) => [k, true])))
