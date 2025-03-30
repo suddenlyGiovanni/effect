@@ -3,6 +3,7 @@
  *
  * @since 2.0.0
  * @module MutableHashSet
+ * @since 2.0.0
  */
 import * as Dual from "./Function.js"
 import { format, type Inspectable, NodeInspectSymbol, toJSON } from "./Inspectable.js"
@@ -71,8 +72,8 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
  * // in places where the type cant be inferred, replace with your type
  * const set: MutableHashSet.MutableHashSet<T> = MutableHashSet.empty<T>()
  * ```
- * See also:
- * Other `MutableHashSet` constructors are {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
+ *
+ * See also: Other `MutableHashSet` constructors are {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
  */
 export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHashMap.empty())
 
@@ -271,11 +272,62 @@ export const add: {
 >(2, (self, key) => (MutableHashMap.set(self.keyMap, key, true), self))
 
 /**
+ * Checks if the specified value exists in the `MutableHashSet`.
+ *
+ * Time complexity: `O(1)` average
+ *
+ * **Syntax**
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ *
+ * // with `data-last`, a.k.a. `pipeable` API
+ * pipe(MutableHashSet.make(0, 1, 2), MutableHashSet.has(3)) // false
+ *
+ * // or piped with the pipe function
+ * MutableHashSet.make(0, 1, 2).pipe(MutableHashSet.has(3)) // false
+ *
+ * // or with `data-first` API
+ * MutableHashSet.has(MutableHashSet.make(0, 1, 2), 3) // false
+ * ```
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
  */
 export const has: {
+  /**
+   * `data-last` a.k.a. `pipeable` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { MutableHashSet, pipe } from "effect"
+   *
+   * const set = MutableHashSet.make(0, 1, 2)
+   *
+   * assert.equal(pipe(set, MutableHashSet.has(0)), true)
+   * assert.equal(pipe(set, MutableHashSet.has(1)), true)
+   * assert.equal(pipe(set, MutableHashSet.has(2)), true)
+   * assert.equal(pipe(set, MutableHashSet.has(3)), false)
+   * ```
+   */
   <V>(key: V): (self: MutableHashSet<V>) => boolean
+
+  /**
+   * `data-first` API
+   *
+   * ```ts
+   * import * as assert from "node:assert/strict"
+   * import { MutableHashSet, pipe } from "effect"
+   *
+   * const set = MutableHashSet.make(0, 1, 2)
+   *
+   * assert.equal(MutableHashSet.has(set, 0), true)
+   * assert.equal(MutableHashSet.has(set, 1), true)
+   * assert.equal(MutableHashSet.has(set, 2), true)
+   * assert.equal(MutableHashSet.has(set, 3), false)
+   * ```
+   */
   <V>(self: MutableHashSet<V>, key: V): boolean
 } = Dual.dual<
   <V>(key: V) => (self: MutableHashSet<V>) => boolean,
