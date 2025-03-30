@@ -468,8 +468,30 @@ export const remove: {
 >(2, (self, key) => (MutableHashMap.remove(self.keyMap, key), self))
 
 /**
+ * Calculates the number of values in the `HashSet`.
+ *
+ * Time complexity: **`O(1)`**
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
+ * @example
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * assert.deepStrictEqual(
+ *   pipe(MutableHashSet.empty(), MutableHashSet.size),
+ *   0
+ * )
+ *
+ * assert.deepStrictEqual(
+ *   pipe(MutableHashSet.make(1, 2, 2, 3, 4, 3), MutableHashSet.size),
+ *   4
+ * )
+ * ```
+ *
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.clear}
  */
 export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(self.keyMap)
