@@ -497,8 +497,27 @@ export const remove: {
 export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(self.keyMap)
 
 /**
+ * Removes all values from the `MutableHashSet`.
+ *
+ * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
+ * @example
+ *
+ * ```ts
+ * import { MutableHashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
+ *
+ * assert.deepStrictEqual(
+ *   pipe(
+ *     MutableHashSet.make(1, 2, 3, 4),
+ *     MutableHashSet.clear,
+ *     MutableHashSet.size
+ *   ),
+ *   0
+ * )
+ * ```
+ *
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size}
  */
 export const clear = <V>(self: MutableHashSet<V>): MutableHashSet<V> => (MutableHashMap.clear(self.keyMap), self)
