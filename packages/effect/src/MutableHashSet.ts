@@ -271,7 +271,7 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
 
 /**
  * **Checks** whether the `MutableHashSet` contains the given element, and
- * **adds** it if not.`
+ * **adds** it if not.
  *
  * Time complexity: **`O(1)`** average
  *
@@ -525,6 +525,10 @@ export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(
 /**
  * Removes all values from the `MutableHashSet`.
  *
+ * This function operates by delegating the clearing action to the underlying
+ * key map associated with the given `MutableHashSet`. It ensures that the hash
+ * set becomes empty while maintaining its existence and structure.
+ *
  * @memberof MutableHashSet
  * @since 2.0.0
  * @category elements
@@ -544,6 +548,8 @@ export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(
  * )
  * ```
  *
+ * @param self - The `MutableHashSet` to clear.
+ * @returns The same `MutableHashSet` after all elements have been removed.
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size}
  */
 export const clear = <V>(self: MutableHashSet<V>): MutableHashSet<V> => (MutableHashMap.clear(self.keyMap), self)
