@@ -298,23 +298,25 @@ export const add: {
    * import { MutableHashSet, pipe } from "effect"
    * import assert from "node:assert/strict"
    *
+   * const mutableHashSet = pipe(
+   *   MutableHashSet.empty<number>(), // MutableHashSet.MutableHashSet<number>
+   *   MutableHashSet.add(0),
+   *   MutableHashSet.add(1),
+   *   MutableHashSet.add(1),
+   *   MutableHashSet.add(2)
+   * )
+   *
    * assert.deepStrictEqual(
-   *   pipe(
-   *     MutableHashSet.empty<number>(), // MutableHashSet.MutableHashSet<number>
-   *     MutableHashSet.add(0),
-   *     MutableHashSet.add(1),
-   *     MutableHashSet.add(1),
-   *     MutableHashSet.add(2),
-   *     MutableHashSet.toValues
-   *   ),
+   *   Array.from(mutableHashSet), // remember that MutableHashSet is also an Iterable
    *   Array.of(0, 1, 2)
    * )
    * ```
    *
    * @typeParam V - The type of elements stored in the `MutableHashSet`.
-   * @param key - The key to be added to the `MutableHashSet`.
-   * @returns A function that accepts a `MutableHashSet` and returns the updated
-   *   (mutated) `MutableHashSet` including the key.
+   * @param key - The key to be added to the `MutableHashSet` if not already
+   *   present.
+   * @returns A function that accepts a `MutableHashSet` and returns the
+   *   reference of the updated `MutableHashSet` including the key.
    */
   <V>(key: V): (self: MutableHashSet<V>) => MutableHashSet<V>
 
@@ -322,7 +324,7 @@ export const add: {
    * `data-first` API
    *
    * ```ts
-   * import { MutableHashSet, pipe } from "effect"
+   * import { MutableHashSet } from "effect"
    * import assert from "node:assert/strict"
    *
    * const empty = MutableHashSet.empty<number>()
@@ -331,11 +333,20 @@ export const add: {
    * const withTwo = MutableHashSet.add(withOne, 2)
    * const withTwoTwo = MutableHashSet.add(withTwo, 2)
    *
+   * assert(Object.is(withTwoTwo, empty)) // proof that it does mutate the original set
+   *
    * assert.deepStrictEqual(
-   *   MutableHashSet.toValues(withTwoTwo),
+   *   Array.from(withTwoTwo), // remember that MutableHashSet is also an Iterable
    *   Array.of(0, 1, 2)
    * )
    * ```
+   *
+   * @typeParam V - The type of elements stored in the `MutableHashSet`.
+   * @param self - The `MutableHashSet` instance from which the key should be
+   *   added to.
+   * @param key - The key to be added to the `MutableHashSet` if not already
+   *   present.
+   * @returns The reference of the updated `MutableHashSet` including the key.
    */
   <V>(self: MutableHashSet<V>, key: V): MutableHashSet<V>
 } = Dual.dual<
