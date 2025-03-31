@@ -15,13 +15,13 @@ const TypeId: unique symbol = Symbol.for("effect/MutableHashSet") as TypeId
 
 /**
  * @since 2.0.0
- * @category symbol
+ * @category Symbol
  */
 export type TypeId = typeof TypeId
 
 /**
  * @since 2.0.0
- * @category models
+ * @category Models
  */
 export interface MutableHashSet<out V> extends Iterable<V>, Pipeable, Inspectable {
   readonly [TypeId]: TypeId
@@ -33,7 +33,9 @@ export interface MutableHashSet<out V> extends Iterable<V>, Pipeable, Inspectabl
 const MutableHashSetProto: Omit<MutableHashSet<unknown>, "keyMap"> = {
   [TypeId]: TypeId,
   [Symbol.iterator](this: MutableHashSet<unknown>): Iterator<unknown> {
-    return Array.from(this.keyMap).map(([_]) => _)[Symbol.iterator]()
+    return Array.from(this.keyMap)
+      .map(([_]) => _)
+      [Symbol.iterator]()
   },
   toString() {
     return format(this.toJSON())
@@ -52,7 +54,9 @@ const MutableHashSetProto: Omit<MutableHashSet<unknown>, "keyMap"> = {
   }
 }
 
-const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): MutableHashSet<V> => {
+const fromHashMap = <V>(
+  keyMap: MutableHashMap.MutableHashMap<V, boolean>
+): MutableHashSet<V> => {
   const set = Object.create(MutableHashSetProto)
   set.keyMap = keyMap
   return set
@@ -67,7 +71,7 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
  * Time complexity: **`O(1)`**
  *
  * @memberof MutableHashSet
- * @category constructors
+ * @category Constructors
  * @example
  *
  * ```ts
@@ -79,8 +83,8 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
  * const set: MutableHashSet.MutableHashSet<T> = MutableHashSet.empty<T>()
  * ```
  *
- * @template K - The type of the elements to be stored in the hash set.
- *  Defaults to `never` if not specified.
+ * @template K - The type of the elements to be stored in the hash set. Defaults
+ *   to `never` if not specified.
  * @returns A new mutable instance of `MutableHashSet` containing no elements
  *   for the specified type `K`.
  * @see Other `MutableHashSet` constructors are {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
@@ -89,44 +93,49 @@ export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHash
 
 /**
  * Creates a new `MutableHashSet` from an iterable collection of values.
+ * Duplicate values are omitted.
  *
  * Time complexity: **`O(n)`** where n is the number of elements in the iterable
  *
- * Creating a MutableHashSet from an `Array`
+ * Creating a `MutableHashSet` from an {@link Array}
  *
  * ```ts
- * import { MutableHashSet, pipe } from "effect"
+ * import { MutableHashSet } from "effect"
+ *
+ * const array: Iterable<number> = [1, 2, 3, 4, 5, 1, 2, 3] // Array<T> is also Iterable<T>
+ * const mutableHashSet: MutableHashSet.MutableHashSet<number> =
+ *   MutableHashSet.fromIterable(array)
  *
  * console.log(
- *   pipe(
- *     [1, 2, 3, 4, 5, 1, 2, 3], // Array<number> is an Iterable<number>;  Note the duplicates.
- *     MutableHashSet.fromIterable,
- *     MutableHashSet.toValues
- *   )
+ *   // MutableHashSet.MutableHashSet<T> is also an Iterable<T>
+ *   Array.from(mutableHashSet)
  * ) // Output: [1, 2, 3, 4, 5]
  * ```
  *
- * Creating a MutableHashSet from a `Set`
+ * Creating a `MutableHashSet` from a {@link Set}
  *
  * ```ts
  * import { MutableHashSet, pipe } from "effect"
  *
  * console.log(
  *   pipe(
- *     new Set(["apple", "banana", "orange", "apple"]), // Set<string> is an Iterable<string>
+ *     // Set<string> is an Iterable<string>
+ *     new Set(["apple", "banana", "orange", "apple"]),
+ *     // constructs MutableHashSet from an Iterable Set
  *     MutableHashSet.fromIterable,
- *     MutableHashSet.toValues
+ *     // since MutableHashSet it is itself an Iterable, we can pass it to other functions expecting an Iterable
+ *     Array.from
  *   )
  * ) // Output: ["apple", "banana", "orange"]
  * ```
  *
- * Creating a MutableHashSet from a `Generator`
+ * Creating a `MutableHashSet` from a {@link Generator}
  *
  * ```ts
  * import { MutableHashSet } from "effect"
  *
  * // Generator functions return iterables
- * function* fibonacci(n: number): Generator<number, void, unknown> {
+ * function* fibonacci(n: number): Generator<number, void, never> {
  *   let [a, b] = [0, 1]
  *   for (let i = 0; i < n; i++) {
  *     yield a
@@ -137,46 +146,68 @@ export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHash
  * // Create a MutableHashSet from the first 10 Fibonacci numbers
  * const fibonacciSet = MutableHashSet.fromIterable(fibonacci(10))
  *
- * console.log(MutableHashSet.toValues(fibonacciSet))
+ * console.log(Array.from(fibonacciSet))
  * // Outputs: [0, 1, 2, 3, 5, 8, 13, 21, 34] but in unsorted order
  * ```
  *
- * Creating a MutableHashSet from another `MutableHashSet`
+ * Creating a `MutableHashSet` from another {@link module:MutableHashSet}
  *
  * ```ts
  * import { MutableHashSet, pipe } from "effect"
  *
  * console.log(
  *   pipe(
- *     // since MutableHashSet implements the Iterable interface, we can use it to create a new MutableHashSet
  *     MutableHashSet.make(1, 2, 3, 4),
  *     MutableHashSet.fromIterable,
- *     MutableHashSet.toValues // turns the HashSet back into an array
+ *     Array.from
  *   )
  * ) // Output: [1, 2, 3, 4]
  * ```
  *
- * Creating a MutableHashSet from other Effect's data structures like `Chunk`
+ * Creating a `MutableHashSet` from an {@link module:HashSet}
+ *
+ * ```ts
+ * import { HashSet, MutableHashSet, pipe } from "effect"
+ *
+ * console.log(
+ *   pipe(
+ *     HashSet.make(1, 2, 3, 4), // it works also with its immutable HashSet sibling
+ *     MutableHashSet.fromIterable,
+ *     Array.from
+ *   )
+ * ) // Output: [1, 2, 3, 4]
+ * ```
+ *
+ * Creating a `MutableHashSet` from other Effect's data structures like
+ * {@link Chunk}
  *
  * ```ts
  * import { Chunk, MutableHashSet, pipe } from "effect"
  *
  * console.log(
  *   pipe(
- *     Chunk.make(1, 2, 3, 4), // Iterable<number>
+ *     Chunk.make(1, 2, 3, 4), //  Chunk is also an Iterable<T>
  *     MutableHashSet.fromIterable,
- *     MutableHashSet.toValues // turns the MutableHashSet back into an array
+ *     Array.from
  *   )
  * ) // Outputs: [1, 2, 3, 4]
  * ```
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category constructors
+ * @category Constructors
+ * @template K - The type of elements to be stored in the resulting
+ *   `MutableHashSet`.
+ * @param keys - An `Iterable` collection containing the keys to be added to the
+ *   `MutableHashSet`.
+ * @returns A new `MutableHashSet` containing just the unique elements from the
+ *   provided iterable.
  * @see Other `MutableHashSet` constructors are {@link module:MutableHashSet.empty} {@link module:MutableHashSet.make}
  */
 export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
-  fromHashMap(MutableHashMap.fromIterable(Array.from(keys).map((k) => [k, true])))
+  fromHashMap(
+    MutableHashMap.fromIterable(Array.from(keys).map((k) => [k, true]))
+  )
 
 /**
  * Construct a new `MutableHashSet` from a variable number of values.
@@ -185,7 +216,7 @@ export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category constructors
+ * @category Constructors
  * @example
  *
  * ```ts
@@ -296,7 +327,7 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category elements
+ * @category Elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear} {@link module:MutableHashSet.has}
  */
 export const add: {
@@ -385,7 +416,7 @@ export const add: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category elements
+ * @category Elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const has: {
@@ -449,7 +480,7 @@ export const has: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category elements
+ * @category Elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const remove: {
@@ -500,7 +531,7 @@ export const remove: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category elements
+ * @category Elements
  * @example
  *
  * ```ts
@@ -531,7 +562,7 @@ export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category elements
+ * @category Elements
  * @example
  *
  * ```ts
@@ -552,4 +583,6 @@ export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(
  * @returns The same `MutableHashSet` after all elements have been removed.
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size}
  */
-export const clear = <V>(self: MutableHashSet<V>): MutableHashSet<V> => (MutableHashMap.clear(self.keyMap), self)
+export const clear = <V>(self: MutableHashSet<V>): MutableHashSet<V> => (
+  MutableHashMap.clear(self.keyMap), self
+)
