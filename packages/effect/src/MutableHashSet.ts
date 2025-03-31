@@ -403,15 +403,25 @@ export const add: {
  *
  * ```ts
  * import { MutableHashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
  *
- * // with `data-last`, a.k.a. `pipeable` API
- * pipe(MutableHashSet.make(0, 1, 2), MutableHashSet.has(3)) // false
+ * assert.equal(
+ *   // with `data-last`, a.k.a. `pipeable` API
+ *   pipe(MutableHashSet.make(0, 1, 2), MutableHashSet.has(3)),
+ *   false
+ * )
  *
- * // or piped with the pipe function
- * MutableHashSet.make(0, 1, 2).pipe(MutableHashSet.has(3)) // false
+ * assert.equal(
+ *   // or piped with the pipe function
+ *   MutableHashSet.make(0, 1, 2).pipe(MutableHashSet.has(3)),
+ *   false
+ * )
  *
- * // or with `data-first` API
- * MutableHashSet.has(MutableHashSet.make(0, 1, 2), 3) // false
+ * assert.equal(
+ *   // or with `data-first` API
+ *   MutableHashSet.has(MutableHashSet.make(0, 1, 2), 3),
+ *   false
+ * )
  * ```
  *
  * @memberof MutableHashSet
