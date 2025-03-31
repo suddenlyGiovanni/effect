@@ -261,7 +261,8 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
 ): MutableHashSet<Keys[number]> => fromIterable(keys)
 
 /**
- * Adds a value to the `MutableHashSet`.
+ * **Checks** whether the `MutableHashSet` contains the given element, and
+ * **add** it if not.
  *
  * Time complexity: **`O(1)`** average
  *
@@ -309,6 +310,11 @@ export const add: {
    *   Array.of(0, 1, 2)
    * )
    * ```
+   *
+   * @typeParam V - The type of elements stored in the `MutableHashSet`.
+   * @param key - The key to be added to the `MutableHashSet`.
+   * @returns A function that accepts a `MutableHashSet` and returns the updated
+   *   (mutated) `MutableHashSet` including the key.
    */
   <V>(key: V): (self: MutableHashSet<V>) => MutableHashSet<V>
 
