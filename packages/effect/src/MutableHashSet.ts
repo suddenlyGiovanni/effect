@@ -477,15 +477,34 @@ export const has: {
  *
  * ```ts
  * import { MutableHashSet, pipe } from "effect"
+ * import assert from "node:assert/strict"
  *
- * // with `data-last`, a.k.a. `pipeable` API
- * pipe(MutableHashSet.make(0, 1, 2), MutableHashSet.remove(0))
+ * assert.equal(
+ *   // with `data-last`, a.k.a. `pipeable` API
+ *   pipe(
+ *     MutableHashSet.make(0, 1, 2),
+ *     MutableHashSet.remove(0),
+ *     MutableHashSet.has(0)
+ *   ),
+ *   false
+ * )
  *
- * // or piped with the pipe function
- * MutableHashSet.make(0, 1, 2).pipe(MutableHashSet.remove(0))
+ * assert.equal(
+ *   // or piped with the pipe function
+ *   MutableHashSet.make(0, 1, 2).pipe(
+ *     MutableHashSet.remove(0),
+ *     MutableHashSet.has(0)
+ *   ),
+ *   false
+ * )
  *
- * // or with `data-first` API
- * MutableHashSet.remove(MutableHashSet.make(0, 1, 2), 0)
+ * assert.equal(
+ *   // or with `data-first` API
+ *   MutableHashSet.remove(MutableHashSet.make(0, 1, 2), 0).pipe(
+ *     MutableHashSet.has(0)
+ *   ),
+ *   false
+ * )
  * ```
  *
  * @memberof MutableHashSet
@@ -499,13 +518,17 @@ export const remove: {
    *
    * ```ts
    * import { MutableHashSet, pipe } from "effect"
-   * import * as assert from "node:assert/strict"
+   * import assert from "node:assert/strict"
    *
-   * const set = MutableHashSet.make(0, 1, 2)
-   * const result = pipe(set, MutableHashSet.remove(0))
+   * const set: MutableHashSet.MutableHashSet<number> = MutableHashSet.make(0, 1, 2)
+   * const result: MutableHashSet.MutableHashSet<number> = pipe(
+   *   set,
+   *   MutableHashSet.remove(0)
+   * )
    *
+   * assert(Object.is(set, result)) // set and result have the same identity
    * assert.equal(pipe(result, MutableHashSet.has(0)), false) // it has correctly removed 0
-   * assert.equal(pipe(set, MutableHashSet.has(0)), true) // it does not mutate the original set
+   * assert.equal(pipe(set, MutableHashSet.has(0)), false) // another proof that we are mutating the original MutableHashSet
    * assert.equal(pipe(result, MutableHashSet.has(1)), true)
    * assert.equal(pipe(result, MutableHashSet.has(2)), true)
    * ```
@@ -517,13 +540,14 @@ export const remove: {
    *
    * ```ts
    * import { MutableHashSet, pipe } from "effect"
-   * import * as assert from "node:assert/strict"
+   * import assert from "node:assert/strict"
    *
    * const set = MutableHashSet.make(0, 1, 2)
    * const result = MutableHashSet.remove(set, 0)
    *
+   * assert(Object.is(set, result)) // set and result have the same identity
    * assert.equal(MutableHashSet.has(result, 0), false) // it has correctly removed 0
-   * assert.equal(MutableHashSet.has(set, 0), true) // it does not mutate the original set
+   * assert.equal(MutableHashSet.has(set, 0), false) // it mutates the original MutableHashSet
    * assert.equal(MutableHashSet.has(result, 1), true)
    * assert.equal(MutableHashSet.has(result, 2), true)
    * ```
