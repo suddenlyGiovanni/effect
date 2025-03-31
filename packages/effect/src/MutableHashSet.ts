@@ -75,12 +75,17 @@
  * efficient code in some scenarios, but requires careful handling to avoid
  * unexpected side effects.
  *
- * ### When to Choose MutableHashSet vs HashSet:
+ * ### When to Choose `MutableHashSet` vs {@link module:HashSet}:
  *
  * - Use `MutableHashSet` when you need to build or modify a set incrementally and
  *   performance is a priority
  * - Use `HashSet` when you want immutability guarantees and functional
  *   programming patterns
+ * - Consider using {@link module:HashSet}'s bounded mutation context (via
+ *   {@link module:HashSet.beginMutation}, {@link module:HashSet.endMutation}, and
+ *   {@link module:HashSet.mutate} methods) when you need temporary mutability
+ *   within an otherwise immutable context - this approach might be sufficient
+ *   for many use cases without requiring a separate `MutableHashSet`
  * - `MutableHashSet` is often useful for local operations where the mutability is
  *   contained and doesn't leak into the broader application
  *
