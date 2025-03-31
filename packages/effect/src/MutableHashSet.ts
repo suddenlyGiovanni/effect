@@ -121,8 +121,7 @@ const MutableHashSetProto: Omit<MutableHashSet<unknown>, "keyMap"> = {
   [TypeId]: TypeId,
   [Symbol.iterator](this: MutableHashSet<unknown>): Iterator<unknown> {
     return Array.from(this.keyMap)
-      .map(([_]) => _)
-      [Symbol.iterator]()
+      .map(([_]) => _)[Symbol.iterator]()
   },
   toString() {
     return format(this.toJSON())
