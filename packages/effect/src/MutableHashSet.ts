@@ -271,7 +271,7 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
 
 /**
  * **Checks** whether the `MutableHashSet` contains the given element, and
- * **add** it if not.
+ * **adds** it if not.`
  *
  * Time complexity: **`O(1)`** average
  *
@@ -321,7 +321,7 @@ export const add: {
    * )
    * ```
    *
-   * @typeParam V - The type of elements stored in the `MutableHashSet`.
+   * @template V - The type of elements stored in the `MutableHashSet`.
    * @param key - The key to be added to the `MutableHashSet` if not already
    *   present.
    * @returns A function that accepts a `MutableHashSet` and returns the
@@ -350,7 +350,7 @@ export const add: {
    * )
    * ```
    *
-   * @typeParam V - The type of elements stored in the `MutableHashSet`.
+   * @template V - The type of elements stored in the `MutableHashSet`.
    * @param self - The `MutableHashSet` instance from which the key should be
    *   added to.
    * @param key - The key to be added to the `MutableHashSet` if not already
