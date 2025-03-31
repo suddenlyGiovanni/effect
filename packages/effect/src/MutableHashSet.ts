@@ -583,20 +583,21 @@ export const remove: {
  * @example
  *
  * ```ts
- * import { MutableHashSet, pipe } from "effect"
+ * import { MutableHashSet } from "effect"
  * import assert from "node:assert/strict"
  *
- * assert.deepStrictEqual(
- *   pipe(MutableHashSet.empty(), MutableHashSet.size),
- *   0
- * )
+ * assert.equal(MutableHashSet.size(MutableHashSet.empty()), 0)
  *
- * assert.deepStrictEqual(
- *   pipe(MutableHashSet.make(1, 2, 2, 3, 4, 3), MutableHashSet.size),
+ * assert.equal(
+ *   MutableHashSet.size(MutableHashSet.make(1, 2, 2, 3, 4, 3)),
  *   4
  * )
  * ```
  *
+ * @template V - The type of the elements to be stored in the `MutableHashSet`.
+ * @param self - The `MutableHashSet` instance for which the size is to be
+ *   determined.
+ * @returns The total number of elements within the `MutableHashSet`.
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.clear}
  */
 export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(self.keyMap)
