@@ -220,7 +220,7 @@ export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
  * @example
  *
  * ```ts
- * import { Equal, Hash, MutableHashSet, pipe } from "effect"
+ * import { Equal, Hash, MutableHashSet } from "effect"
  * import assert from "node:assert/strict"
  *
  * class Character implements Equal.Equal {
@@ -253,44 +253,26 @@ export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
  *   }
  * }
  *
- * assert.strictEqual(
- *   Equal.equals(
- *     MutableHashSet.make(
- *       Character.of("Alice", "Curious"),
- *       Character.of("Alice", "Curious"),
- *       Character.of("White Rabbit", "Always late"),
- *       Character.of("Mad Hatter", "Tea enthusiast")
- *     ),
- *     // Is the same as adding each character to an empty set
- *     pipe(
- *       MutableHashSet.empty(),
- *       MutableHashSet.add(Character.of("Alice", "Curious")),
- *       MutableHashSet.add(Character.of("Alice", "Curious")), // Alice tried to attend twice!
- *       MutableHashSet.add(Character.of("White Rabbit", "Always late")),
- *       MutableHashSet.add(Character.of("Mad Hatter", "Tea enthusiast"))
- *     )
- *   ),
- *   true,
- *   "`MutableHashSet.make` and `MutableHashSet.empty() + MutableHashSet.add()` should be equal"
+ * const mutableCharacterHashSet = MutableHashSet.make(
+ *   Character.of("Alice", "Curious"),
+ *   Character.of("Alice", "Curious"),
+ *   Character.of("White Rabbit", "Always late"),
+ *   Character.of("Mad Hatter", "Tea enthusiast")
  * )
  *
- * assert.strictEqual(
- *   Equal.equals(
- *     MutableHashSet.make(
- *       Character.of("Alice", "Curious"),
- *       Character.of("Alice", "Curious"),
- *       Character.of("White Rabbit", "Always late"),
- *       Character.of("Mad Hatter", "Tea enthusiast")
- *     ),
- *     MutableHashSet.fromIterable([
- *       Character.of("Alice", "Curious"),
- *       Character.of("Alice", "Curious"),
- *       Character.of("White Rabbit", "Always late"),
- *       Character.of("Mad Hatter", "Tea enthusiast")
- *     ])
+ * assert.equal(
+ *   MutableHashSet.has(
+ *     mutableCharacterHashSet,
+ *     Character.of("Alice", "Curious")
  *   ),
- *   true,
- *   "`MutableHashSet.make` and `MutableHashSet.fromIterable` should be equal"
+ *   true
+ * )
+ * assert.equal(
+ *   MutableHashSet.has(
+ *     mutableCharacterHashSet,
+ *     Character.of("Fluffy", "Kind")
+ *   ),
+ *   false
  * )
  * ```
  *
