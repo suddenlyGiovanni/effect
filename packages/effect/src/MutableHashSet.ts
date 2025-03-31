@@ -102,13 +102,13 @@ const TypeId: unique symbol = Symbol.for("effect/MutableHashSet") as TypeId
 
 /**
  * @since 2.0.0
- * @category Symbol
+ * @category symbol
  */
 export type TypeId = typeof TypeId
 
 /**
  * @since 2.0.0
- * @category Models
+ * @category models
  */
 export interface MutableHashSet<out V> extends Iterable<V>, Pipeable, Inspectable {
   readonly [TypeId]: TypeId
@@ -158,7 +158,7 @@ const fromHashMap = <V>(
  * Time complexity: **`O(1)`**
  *
  * @memberof MutableHashSet
- * @category Constructors
+ * @category constructors
  * @example
  *
  * ```ts
@@ -282,7 +282,7 @@ export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHash
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Constructors
+ * @category constructors
  * @template K - The type of elements to be stored in the resulting
  *   `MutableHashSet`.
  * @param keys - An `Iterable` collection containing the keys to be added to the
@@ -303,7 +303,7 @@ export const fromIterable = <K = never>(keys: Iterable<K>): MutableHashSet<K> =>
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Constructors
+ * @category constructors
  * @example
  *
  * ```ts
@@ -396,7 +396,7 @@ export const make = <Keys extends ReadonlyArray<unknown>>(
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Elements
+ * @category elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear} {@link module:MutableHashSet.has}
  */
 export const add: {
@@ -495,7 +495,7 @@ export const add: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Elements
+ * @category elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.remove} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const has: {
@@ -578,7 +578,7 @@ export const has: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Elements
+ * @category elements
  * @see Other `MutableHashSet` elements are {@link module:MutableHashSet.add} {@link module:MutableHashSet.has} {@link module:MutableHashSet.size} {@link module:MutableHashSet.clear}
  */
 export const remove: {
@@ -648,7 +648,7 @@ export const remove: {
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Elements
+ * @category elements
  * @example
  *
  * ```ts
@@ -680,7 +680,7 @@ export const size = <V>(self: MutableHashSet<V>): number => MutableHashMap.size(
  *
  * @memberof MutableHashSet
  * @since 2.0.0
- * @category Elements
+ * @category elements
  * @example
  *
  * ```ts
