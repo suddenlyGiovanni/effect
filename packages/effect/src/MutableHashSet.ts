@@ -59,8 +59,14 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
 }
 
 /**
+ * Creates an empty mutable hash set.
+ *
+ * This function initializes and returns an empty `MutableHashSet` instance,
+ * which allows for efficient storage and manipulation of unique elements.
+ *
+ * Time complexity: **`O(1)`**
+ *
  * @memberof MutableHashSet
- * @since 2.0.0
  * @category constructors
  * @example
  *
@@ -69,12 +75,15 @@ const fromHashMap = <V>(keyMap: MutableHashMap.MutableHashMap<V, boolean>): Muta
  *
  * type T = unknown // replace with your type
  *
- * // in places where the type cant be inferred, replace with your type
+ * // in places where the type can't be inferred, replace with your type
  * const set: MutableHashSet.MutableHashSet<T> = MutableHashSet.empty<T>()
  * ```
  *
- * See also: Other `MutableHashSet` constructors are
- * {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
+ * @template K - The type of the elements to be stored in the hash set.
+ *  Defaults to `never` if not specified.
+ * @returns A new mutable instance of `MutableHashSet` containing no elements
+ *   for the specified type `K`.
+ * @see Other `MutableHashSet` constructors are {@link module:MutableHashSet.make} {@link module:MutableHashSet.fromIterable}
  */
 export const empty = <K = never>(): MutableHashSet<K> => fromHashMap(MutableHashMap.empty())
 
