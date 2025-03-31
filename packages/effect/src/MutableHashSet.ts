@@ -520,7 +520,11 @@ export const remove: {
    * import { MutableHashSet, pipe } from "effect"
    * import assert from "node:assert/strict"
    *
-   * const set: MutableHashSet.MutableHashSet<number> = MutableHashSet.make(0, 1, 2)
+   * const set: MutableHashSet.MutableHashSet<number> = MutableHashSet.make(
+   *   0,
+   *   1,
+   *   2
+   * )
    * const result: MutableHashSet.MutableHashSet<number> = pipe(
    *   set,
    *   MutableHashSet.remove(0)
@@ -532,6 +536,11 @@ export const remove: {
    * assert.equal(pipe(result, MutableHashSet.has(1)), true)
    * assert.equal(pipe(result, MutableHashSet.has(2)), true)
    * ```
+   *
+   * @template V - The type of the elements in the `MutableHashSet`.
+   * @param key - The key to be removed from the `MutableHashSet`.
+   * @returns A function that takes a `MutableHashSet` as input and returns the
+   *   reference to the same `MutableHashSet` with the specified key removed.
    */
   <V>(key: V): (self: MutableHashSet<V>) => MutableHashSet<V>
 
@@ -551,6 +560,11 @@ export const remove: {
    * assert.equal(MutableHashSet.has(result, 1), true)
    * assert.equal(MutableHashSet.has(result, 2), true)
    * ```
+   *
+   * @template V - The type of the elements in the `MutableHashSet`.
+   * @param self - The `MutableHashSet` to which the key will be removed from.
+   * @param key - The value to be removed from the `MutableHashSet` if present.
+   * @returns The reference to the updated `MutableHashSet`.
    */
   <V>(self: MutableHashSet<V>, key: V): MutableHashSet<V>
 } = Dual.dual<
