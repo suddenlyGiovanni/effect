@@ -39,7 +39,7 @@ import type * as _Predicate from "./Predicate.js"
  *
  * @experimental
  */
-export type Int = number & Brand.Brand<"Int">
+export type Int<N extends number = number> = N & Brand.Brand<"Int">
 
 const Int = Brand.refined<Int>(
   (n) => _Number.isNumber(n) && !Number.isNaN(n) && Number.isInteger(n),
@@ -70,7 +70,7 @@ const Int = Brand.refined<Int>(
  * @experimental
  */
 
-export const of: (n: number) => Int = (n) => Int(n)
+export const of = <const N extends number>(n: N): Int<N> => Int(n) as Int<N>
 
 /**
  * Lift a `number` in the set of `Option<Int>`, and brands it as an `Int` if the
@@ -122,7 +122,7 @@ export const of: (n: number) => Int = (n) => Int(n)
  * @returns An `Option` containing the `Int` if valid, `None` otherwise
  * @experimental
  */
-export const option: (n: number) => _Option.Option<Int> = Int.option
+export const option = <const N extends number>(n: N): _Option.Option<Int<N>> => Int.option(n) as _Option.Option<Int<N>>
 
 /**
  * Lift a `number` in the set of `Either.Right<Int>` if the number is a valid
@@ -187,9 +187,9 @@ export const option: (n: number) => _Option.Option<Int> = Int.option
  *   invalid
  * @experimental
  */
-export const either: (
-  n: number
-) => Either.Either<Int, Brand.Brand.BrandErrors> = Int.either
+export const either = <N extends number>(
+  n: N
+): Either.Either<Int<N>, Brand.Brand.BrandErrors> => Int.either(n) as Either.Either<Int<N>, Brand.Brand.BrandErrors>
 
 /**
  * Constant of `Int<0>`
@@ -198,7 +198,7 @@ export const either: (
  * @category Constants
  * @experimental
  */
-export const empty: Int = of(0)
+export const empty: Int<0> = of(0)
 
 /**
  * Constant of `Int<1>`
@@ -207,7 +207,7 @@ export const empty: Int = of(0)
  * @category Constants
  * @experimental
  */
-export const unit: Int = of(1)
+export const unit: Int<1> = of(1)
 
 /**
  * Type guard to test if a value is an `Int`.
@@ -275,29 +275,7 @@ export const sum: {
    * )
    * ```
    */
-  (that: Int): (self: Int) => Int
-
-  /**
-   * Sum curried function in the set of numbers. It allows you to start from an
-   * `Int` and add a number to it.
-   *
-   * @example
-   *
-   * ```ts
-   * import { pipe, Int, Number } from "effect"
-   * import * as assert from "node:assert/strict"
-   *
-   * assert.equal(
-   *   pipe(
-   *     Int.of(10),
-   *     Int.add(-10.5), // now the output is no longer an `Int`, but it has been widened to a `number`
-   *     Number.add(0)
-   *   ),
-   *   -0.5
-   * )
-   * ```
-   */
-  // (that: number): (self: Int) => number
+  <A extends number>(that: Int<A>): <B extends number>(self: Int<B>) => Int
 
   /**
    * **data first api**
@@ -309,26 +287,8 @@ export const sum: {
    * assert.equal(Int.add(Int.of(10), Int.of(-10)), Int.empty)
    * ```
    */
-  (self: Int, that: Int): Int
-  /**
-   * Sum in the set of Ints and numbers. It allows you to start from an `Int`
-   * and add a number to it. The result will be a number.
-   *
-   * @example
-   *
-   * ```ts
-   * import { pipe, Int, Number } from "effect"
-   * import * as assert from "node:assert/strict"
-   *
-   * assert.equal(Int.add(Int.of(10), -10.5), -0.5)
-   * ```
-   *
-   * @param self - The first term of kind `Int`.
-   * @param that - The second term of kind `number`.
-   * @returns A `number`
-   */
-  // (self: Int, that: number): number
-} = dual(2, (self: Int, that: Int): Int => of(self + that))
+  <A extends number, B extends number>(self: Int<A>, that: Int<B>): Int
+} = dual(2, <A extends number, B extends number>(self: Int<A>, that: Int<B>): Int => of(self + that))
 
 /**
  * Provides a subtraction operation on `Int`s.
@@ -1512,8 +1472,9 @@ export const sumAll: (collection: Iterable<Int, any, any>) => Int = (
  * @returns The product of the `Int`s in the `Iterable`.
  * @experimental
  */
-export const multiplyAll: (collection: Iterable<Int>) => Int = (collection) =>
-  _Iterable.reduce(collection, unit, multiply)
+export const multiplyAll: <N extends number>(
+  collection: Iterable<Int<N>>
+) => Int = (collection) => _Iterable.reduce(collection, unit, multiply)
 
 /**
  * Returns the remainder left over when one operand is divided by a second

@@ -676,7 +676,7 @@ describe("Int", () => {
 
   it("multiplyAll", () => {
     strictEqual(
-      Int.multiplyAll(Array.of(Int.of(2), Int.empty, Int.of(4))),
+      Int.multiplyAll(Array.of<Int.Int>(Int.of(2), Int.empty, Int.of(4))),
       Int.empty
     )
 
@@ -686,7 +686,7 @@ describe("Int", () => {
     )
 
     strictEqual(
-      Int.multiplyAll(Array.of(Int.of(-2), Int.of(3), Int.of(4))),
+      Int.multiplyAll(Array.of<Int.Int>(Int.of(-2), Int.of(3), Int.of(4))),
       Int.of(-24)
     )
 
