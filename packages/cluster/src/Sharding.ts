@@ -155,6 +155,11 @@ export class Sharding extends Context.Tag("@effect/cluster/Sharding")<Sharding, 
   readonly reset: (requestId: Snowflake.Snowflake) => Effect.Effect<boolean>
 
   /**
+   * Trigger a storage read, which will read all unprocessed messages.
+   */
+  readonly pollStorage: Effect.Effect<void>
+
+  /**
    * Retrieves the active entity count for the current runner.
    */
   readonly activeEntityCount: Effect.Effect<number>
@@ -1107,12 +1112,12 @@ const make = Effect.gen(function*() {
   const reaper = yield* EntityReaper
   const registerEntity: Sharding["Type"]["registerEntity"] = Effect.fnUntraced(
     function*(entity, build, options) {
-      if (entityManagers.has(entity.type)) return
+      if (Option.isNone(config.runnerAddress) || entityManagers.has(entity.type)) return
       const scope = yield* Scope.make()
       const manager = yield* EntityManager.make(entity, build, {
         ...options,
         storage,
-        runnerAddress: Option.getOrThrow(config.runnerAddress),
+        runnerAddress: config.runnerAddress.value,
         sharding
       }).pipe(
         Effect.provide(context.pipe(
@@ -1191,6 +1196,7 @@ const make = Effect.gen(function*() {
     sendOutgoing: (message, discard) => sendOutgoing(message, discard),
     notify: (message) => notifyLocal(message, false),
     activeEntityCount,
+    pollStorage: storageReadLatch.open,
     reset
   })
 

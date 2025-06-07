@@ -1,5 +1,57 @@
 # @effect/platform-node-shared
 
+## 0.39.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @effect/cluster@0.38.8
+
+## 0.39.7
+
+### Patch Changes
+
+- Updated dependencies [[`22166f8`](https://github.com/Effect-TS/effect/commit/22166f80c677cad6b4719e0e0253a9d06f964626)]:
+  - @effect/cluster@0.38.7
+
+## 0.39.6
+
+### Patch Changes
+
+- [#4998](https://github.com/Effect-TS/effect/pull/4998) [`f8ff7dc`](https://github.com/Effect-TS/effect/commit/f8ff7dccfe6ebd3409ab95c57f61764643d19a2b) Thanks @tim-smart! - expose MessageStorage in cluster clientOnly layers
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/cluster@0.38.6
+  - @effect/rpc@0.61.8
+  - @effect/sql@0.37.9
+
+## 0.39.5
+
+### Patch Changes
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/cluster@0.38.5
+  - @effect/platform@0.84.7
+  - @effect/rpc@0.61.7
+  - @effect/sql@0.37.8
+
+## 0.39.4
+
+### Patch Changes
+
+- Updated dependencies [[`7e59d0e`](https://github.com/Effect-TS/effect/commit/7e59d0e2e004d86b8d0778e99c6fcd173fcb682a)]:
+  - @effect/cluster@0.38.4
+
+## 0.39.3
+
+### Patch Changes
+
+- Updated dependencies [[`59575c5`](https://github.com/Effect-TS/effect/commit/59575c5bf17a32c8b76c42e3794222b20e766581)]:
+  - @effect/cluster@0.38.3
+  - @effect/sql@0.37.7
+
 ## 0.39.2
 
 ### Patch Changes

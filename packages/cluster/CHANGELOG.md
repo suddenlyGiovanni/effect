@@ -1,5 +1,54 @@
 # @effect/cluster
 
+## 0.38.8
+
+### Patch Changes
+
+- Updated dependencies [[`2a9a0ef`](https://github.com/Effect-TS/effect/commit/2a9a0ef1181a4419e239edb2abfd95f359a4b7f7)]:
+  - @effect/workflow@0.1.6
+
+## 0.38.7
+
+### Patch Changes
+
+- [#4999](https://github.com/Effect-TS/effect/pull/4999) [`22166f8`](https://github.com/Effect-TS/effect/commit/22166f80c677cad6b4719e0e0253a9d06f964626) Thanks @tim-smart! - make registerEntity a no-op on clientOnly cluster
+
+## 0.38.6
+
+### Patch Changes
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/rpc@0.61.8
+  - @effect/sql@0.37.9
+  - @effect/workflow@0.1.5
+
+## 0.38.5
+
+### Patch Changes
+
+- Updated dependencies [[`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f), [`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28), [`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f)]:
+  - @effect/workflow@0.1.4
+  - effect@3.16.4
+  - @effect/platform@0.84.7
+  - @effect/rpc@0.61.7
+  - @effect/sql@0.37.8
+
+## 0.38.4
+
+### Patch Changes
+
+- [#4984](https://github.com/Effect-TS/effect/pull/4984) [`7e59d0e`](https://github.com/Effect-TS/effect/commit/7e59d0e2e004d86b8d0778e99c6fcd173fcb682a) Thanks @tim-smart! - expose Sharding.pollStorage api
+
+## 0.38.3
+
+### Patch Changes
+
+- [#4983](https://github.com/Effect-TS/effect/pull/4983) [`59575c5`](https://github.com/Effect-TS/effect/commit/59575c5bf17a32c8b76c42e3794222b20e766581) Thanks @tim-smart! - do not resume already running workflows
+
+- Updated dependencies []:
+  - @effect/sql@0.37.7
+
 ## 0.38.2
 
 ### Patch Changes

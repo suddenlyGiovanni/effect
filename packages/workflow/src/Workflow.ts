@@ -79,13 +79,13 @@ export interface Workflow<
   ) => Effect.Effect<
     Discard extends true ? void : Success["Type"],
     Discard extends true ? never : Error["Type"],
-    WorkflowEngine | Registration<Name> | Payload["Context"] | Success["Context"] | Error["Context"]
+    WorkflowEngine | Payload["Context"] | Success["Context"] | Error["Context"]
   >
 
   /**
    * Interrupt a workflow execution for the given execution ID.
    */
-  readonly interrupt: (executionId: string) => Effect.Effect<void, never, WorkflowEngine | Registration<Name>>
+  readonly interrupt: (executionId: string) => Effect.Effect<void, never, WorkflowEngine>
 
   /**
    * Create a layer that registers the workflow and provides an effect to
@@ -97,7 +97,7 @@ export interface Workflow<
       executionId: string
     ) => Effect.Effect<Success["Type"], Error["Type"], R>
   ) => Layer.Layer<
-    Registration<Name> | WorkflowEngine,
+    WorkflowEngine,
     never,
     | WorkflowEngine
     | Exclude<R, WorkflowEngine | WorkflowInstance | Execution<Name> | Scope.Scope>
@@ -163,15 +163,6 @@ export interface AnyTaggedRequestSchema extends AnyStructSchema {
  * @since 1.0.0
  * @category Models
  */
-export interface Registration<Name extends string> {
-  readonly _: unique symbol
-  readonly name: Name
-}
-
-/**
- * @since 1.0.0
- * @category Models
- */
 export interface Execution<Name extends string> {
   readonly _: unique symbol
   readonly name: Name
@@ -190,18 +181,6 @@ export interface Any {
   readonly annotations: Context.Context<never>
   readonly executionId: (payload: any) => Effect.Effect<string>
 }
-
-/**
- * @since 1.0.0
- * @category Models
- */
-export type Registrations<Workflows extends Any> = Workflows extends Workflow<
-  infer _Name,
-  infer _Payload,
-  infer _Success,
-  infer _Error
-> ? Registration<_Name> :
-  never
 
 /**
  * @since 1.0.0
@@ -291,7 +270,6 @@ export const make = <
           if (result._tag === "Complete") {
             return yield* result.exit as Exit.Exit<Success["Type"], Error["Type"]>
           }
-          // @effect-diagnostics effect/floatingEffect:off
           sleep ??= (yield* Schedule.driver(suspendedRetrySchedule)).next(void 0).pipe(
             Effect.catchAll(() => Effect.dieMessage(`${options.name}.execute: suspendedRetrySchedule exhausted`))
           )
@@ -480,18 +458,47 @@ export const Result = <Success extends Schema.Schema.Any, Error extends Schema.S
  */
 export const intoResult = <A, E, R>(
   effect: Effect.Effect<A, E, R>
-): Effect.Effect<Result<A, E>, never, R | WorkflowInstance> =>
-  Effect.uninterruptibleMask((restore) =>
-    Effect.withFiberRuntime((fiber) =>
-      Effect.matchCause(restore(effect), {
-        onSuccess: (value) => new Complete({ exit: Exit.succeed(value) }),
-        onFailure(cause) {
-          const instance = Context.unsafeGet(fiber.currentContext, InstanceTag)
-          return instance.suspended ? new Suspended() : new Complete({ exit: Exit.failCause(cause) })
-        }
-      })
+): Effect.Effect<Result<A, E>, never, Exclude<R, Scope.Scope> | WorkflowInstance> =>
+  Effect.contextWithEffect((context: Context.Context<WorkflowInstance>) => {
+    const instance = Context.get(context, InstanceTag)
+    return Effect.uninterruptibleMask((restore) =>
+      restore(effect).pipe(
+        Effect.scoped,
+        Effect.matchCause({
+          onSuccess: (value) => new Complete({ exit: Exit.succeed(value) }),
+          onFailure: (cause) => instance.suspended ? new Suspended() : new Complete({ exit: Exit.failCause(cause) })
+        })
+      )
     )
-  )
+  })
+
+/**
+ * @since 1.0.0
+ * @category Result
+ */
+export const wrapActivityResult = <A, E, R>(
+  effect: Effect.Effect<A, E, R>,
+  isSuspend: (value: A) => boolean
+): Effect.Effect<A, E, R | WorkflowInstance> =>
+  Effect.contextWithEffect((context: Context.Context<WorkflowInstance>) => {
+    const instance = Context.get(context, InstanceTag)
+    const state = instance.activityState
+    if (instance.suspended) {
+      return state.count > 0 ?
+        state.latch.await.pipe(
+          Effect.andThen(Effect.yieldNow()),
+          Effect.andThen(Effect.interrupt)
+        ) :
+        Effect.interrupt
+    }
+    if (state.count === 0) state.latch.unsafeClose()
+    state.count++
+    return Effect.onExit(effect, (exit) => {
+      state.count--
+      const isSuspended = Exit.isSuccess(exit) && isSuspend(exit.value)
+      return state.count === 0 ? state.latch.open : isSuspended ? state.latch.await : Effect.void
+    })
+  })
 
 /**
  * Add compensation logic to an effect inside a Workflow. The compensation finalizer will be
@@ -519,14 +526,15 @@ export const withCompensation: {
   compensation: (value: A, cause: Cause.Cause<unknown>) => Effect.Effect<void, never, R2>
 ): Effect.Effect<A, E, R | R2 | WorkflowInstance | Scope.Scope> =>
   Effect.uninterruptibleMask((restore) =>
-    Effect.contextWithEffect((context: Context.Context<WorkflowInstance>) => {
-      const instance = Context.get(context, InstanceTag)
-      return Effect.tap(restore(effect), (value) =>
-        Effect.addFinalizer((exit) => {
-          if (Exit.isSuccess(exit) || instance.suspended) {
-            return Effect.void
-          }
-          return compensation(value, exit.cause)
-        }))
-    })
+    Effect.tap(
+      restore(effect),
+      (value) =>
+        Effect.contextWithEffect((context: Context.Context<WorkflowInstance>) =>
+          Effect.addFinalizer((exit) =>
+            Exit.isSuccess(exit) || Context.get(context, InstanceTag).suspended
+              ? Effect.void
+              : compensation(value, exit.cause)
+          )
+        )
+    )
   ))
