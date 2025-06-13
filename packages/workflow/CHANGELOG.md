@@ -1,5 +1,95 @@
 # @effect/workflow
 
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294), [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e)]:
+  - effect@3.16.7
+  - @effect/rpc@0.61.15
+  - @effect/platform@0.84.11
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`bf369b2`](https://github.com/Effect-TS/effect/commit/bf369b2902a0e0b195d957c18b9efd180942cf8b), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/platform@0.84.10
+  - @effect/rpc@0.61.14
+
+## 0.1.12
+
+### Patch Changes
+
+- Updated dependencies [[`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126), [`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126)]:
+  - @effect/rpc@0.61.13
+
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies [[`e0d3d42`](https://github.com/Effect-TS/effect/commit/e0d3d424d8f4e6a8ada017160406991f02b3c068)]:
+  - @effect/rpc@0.61.12
+
+## 0.1.10
+
+### Patch Changes
+
+- [#4750](https://github.com/Effect-TS/effect/pull/4750) [`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53) Thanks @tim-smart! - add Workflow.CaptureDefects annotation, to configure defect behaviour
+
+- Updated dependencies [[`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53)]:
+  - @effect/rpc@0.61.11
+
+## 0.1.9
+
+### Patch Changes
+
+- [#5018](https://github.com/Effect-TS/effect/pull/5018) [`d350176`](https://github.com/Effect-TS/effect/commit/d3501768d42d7ff3ebc2d414c95cc1fcce15894a) Thanks @tim-smart! - prevent shadowing of Workflow context
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies [[`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - effect@3.16.5
+  - @effect/platform@0.84.9
+  - @effect/rpc@0.61.10
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies [[`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2), [`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2)]:
+  - @effect/rpc@0.61.9
+
+## 0.1.6
+
+### Patch Changes
+
+- [#5009](https://github.com/Effect-TS/effect/pull/5009) [`2a9a0ef`](https://github.com/Effect-TS/effect/commit/2a9a0ef1181a4419e239edb2abfd95f359a4b7f7) Thanks @tim-smart! - remove Workflow.Registration type
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/rpc@0.61.8
+
+## 0.1.4
+
+### Patch Changes
+
+- [#4995](https://github.com/Effect-TS/effect/pull/4995) [`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f) Thanks @tim-smart! - add DurableDeferred.into
+
+- [#4995](https://github.com/Effect-TS/effect/pull/4995) [`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f) Thanks @tim-smart! - add Activity.raceAll
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/platform@0.84.7
+  - @effect/rpc@0.61.7
+
 ## 0.1.3
 
 ### Patch Changes

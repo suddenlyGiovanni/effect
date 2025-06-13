@@ -1,5 +1,35 @@
 # effect
 
+## 3.16.7
+
+### Patch Changes
+
+- [#5033](https://github.com/Effect-TS/effect/pull/5033) [`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294) Thanks @tim-smart! - ensure DateTime.make interprets strings without zone as UTC
+
+## 3.16.6
+
+### Patch Changes
+
+- [#5026](https://github.com/Effect-TS/effect/pull/5026) [`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a) Thanks @KhraksMamtsov! - Add missing type variances
+
+- [#5031](https://github.com/Effect-TS/effect/pull/5031) [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd) Thanks @KhraksMamtsov! - Fix Context.add & Context.make signatures
+
+- [#5003](https://github.com/Effect-TS/effect/pull/5003) [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8) Thanks @beezee! - Ensure binding `__proto__` to lexical scope in do notation is preserved by `bind` and `let`
+
+## 3.16.5
+
+### Patch Changes
+
+- [#5008](https://github.com/Effect-TS/effect/pull/5008) [`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac) Thanks @jdharrisnz! - Record.findFirst: Accept ReadonlyRecord type input and optimise the loop
+
+## 3.16.4
+
+### Patch Changes
+
+- [#4994](https://github.com/Effect-TS/effect/pull/4994) [`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3) Thanks @tim-smart! - don't inherit interruption flag in Effect.addFinalizer
+
+- [#4986](https://github.com/Effect-TS/effect/pull/4986) [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28) Thanks @tim-smart! - ensure Cause.YieldableError extends Error
+
 ## 3.16.3
 
 ### Patch Changes

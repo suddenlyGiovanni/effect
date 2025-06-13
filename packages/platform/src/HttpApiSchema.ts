@@ -118,7 +118,12 @@ export const getEncoding = (ast: AST.AST, fallback = encodingJson): Encoding =>
  * @since 1.0.0
  * @category annotations
  */
-export const getParam = (ast: AST.AST): string | undefined => ast.annotations[AnnotationParam] as string | undefined
+export const getParam = (ast: AST.AST | Schema.PropertySignature.AST): string | undefined => {
+  if (ast._tag === "PropertySignatureTransformation") {
+    ast = ast.to.type
+  }
+  return (ast.annotations[AnnotationParam] as any)?.name as string | undefined
+}
 
 /**
  * @since 1.0.0
@@ -228,10 +233,13 @@ type Void$ = typeof Schema.Void
  * @since 1.0.0
  * @category path params
  */
-export interface Param<Name extends string, S extends Schema.Schema.Any>
-  extends Schema.Schema<S["Type"], S["Encoded"], S["Context"]>
+export interface Param<Name extends string, S extends Schema.Schema.Any | Schema.PropertySignature.Any>
+  extends Schema.Schema<Schema.Schema.Type<S>, Schema.Schema.Encoded<S>, Schema.Schema.Context<S>>
 {
-  readonly [AnnotationParam]: Name
+  readonly [AnnotationParam]: {
+    readonly name: Name
+    readonly schema: S
+  }
 }
 
 /**
@@ -239,19 +247,29 @@ export interface Param<Name extends string, S extends Schema.Schema.Any>
  * @category path params
  */
 export const param: {
-  <Name extends string>(name: Name): <S extends AnyString>(schema: S) => Param<Name, S>
-  <Name extends string, S extends AnyString>(name: Name, schema: S): Param<Name, S>
+  <Name extends string>(
+    name: Name
+  ): <S extends Schema.Schema.Any | Schema.PropertySignature.Any>(
+    schema:
+      & S
+      & ([Schema.Schema.Encoded<S> & {}] extends [string] ? unknown : "Schema must be encodable to a string")
+  ) => Param<Name, S>
+  <Name extends string, S extends Schema.Schema.Any | Schema.PropertySignature.Any>(
+    name: Name,
+    schema:
+      & S
+      & ([Schema.Schema.Encoded<S> & {}] extends [string] ? unknown : "Schema must be encodable to a string")
+  ): Param<Name, S>
 } = dual(
   2,
-  <Name extends string, S extends AnyString>(name: Name, schema: S): Param<Name, S> =>
-    schema.annotations({ [AnnotationParam]: name }) as any
+  <Name extends string, S extends Schema.Schema.Any | Schema.PropertySignature.Any>(
+    name: Name,
+    schema: S
+  ): Param<Name, S> =>
+    schema.annotations({
+      [AnnotationParam]: { name, schema }
+    }) as any
 )
-
-/**
- * @since 1.0.0
- * @category path params
- */
-export type AnyString = Schema.Schema<any, string, never> | Schema.Schema<any, string, any>
 
 /**
  * @since 1.0.0

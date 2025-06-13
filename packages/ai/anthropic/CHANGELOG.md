@@ -1,5 +1,84 @@
 # @effect/ai-anthropic
 
+## 0.8.16
+
+### Patch Changes
+
+- Updated dependencies [[`daed158`](https://github.com/Effect-TS/effect/commit/daed158f2cf00175633284f075cf611c52aa2a1c)]:
+  - @effect/ai@0.18.16
+
+## 0.8.15
+
+### Patch Changes
+
+- Updated dependencies [[`c315989`](https://github.com/Effect-TS/effect/commit/c315989cade6c2a5c9cb157ad85f56b492675add)]:
+  - @effect/ai@0.18.15
+
+## 0.8.14
+
+### Patch Changes
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294), [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e), [`dd4d380`](https://github.com/Effect-TS/effect/commit/dd4d3802f714d59171b1e9226a7babf9723ea952)]:
+  - effect@3.16.7
+  - @effect/ai@0.18.14
+  - @effect/experimental@0.48.12
+  - @effect/platform@0.84.11
+
+## 0.8.13
+
+### Patch Changes
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`aa3a819`](https://github.com/Effect-TS/effect/commit/aa3a819707c15dd39b6d9ae4b4293bd87b74e175), [`bf369b2`](https://github.com/Effect-TS/effect/commit/bf369b2902a0e0b195d957c18b9efd180942cf8b), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/ai@0.18.13
+  - @effect/platform@0.84.10
+  - @effect/experimental@0.48.11
+
+## 0.8.12
+
+### Patch Changes
+
+- Updated dependencies [[`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - effect@3.16.5
+  - @effect/ai@0.18.12
+  - @effect/experimental@0.48.10
+  - @effect/platform@0.84.9
+
+## 0.8.11
+
+### Patch Changes
+
+- Updated dependencies [[`2dc5f93`](https://github.com/Effect-TS/effect/commit/2dc5f932f89d260e2f6139c9b89e0548d11d94c2)]:
+  - @effect/ai@0.18.11
+  - @effect/experimental@0.48.9
+
+## 0.8.10
+
+### Patch Changes
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/experimental@0.48.9
+  - @effect/ai@0.18.10
+
+## 0.8.9
+
+### Patch Changes
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/ai@0.18.9
+  - @effect/experimental@0.48.8
+  - @effect/platform@0.84.7
+
+## 0.8.8
+
+### Patch Changes
+
+- Updated dependencies [[`a2d57c9`](https://github.com/Effect-TS/effect/commit/a2d57c9ac596445009ca12859b78e00e5d89b936)]:
+  - @effect/experimental@0.48.7
+  - @effect/ai@0.18.8
+
 ## 0.8.7
 
 ### Patch Changes

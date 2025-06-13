@@ -109,6 +109,7 @@ export const makeNoSerialization: <Rpcs extends Rpc.Any, E>(
     ) => Effect.Effect<void, E>
     readonly supportsAck?: boolean | undefined
     readonly spanPrefix?: string | undefined
+    readonly spanAttributes?: Record<string, unknown> | undefined
     readonly generateRequestId?: (() => RequestId) | undefined
     readonly disableTracing?: boolean | undefined
   }
@@ -131,6 +132,7 @@ export const makeNoSerialization: <Rpcs extends Rpc.Any, E>(
     ) => Effect.Effect<void, E>
     readonly supportsAck?: boolean | undefined
     readonly spanPrefix?: string | undefined
+    readonly spanAttributes?: Record<string, unknown> | undefined
     readonly generateRequestId?: (() => RequestId) | undefined
     readonly disableTracing?: boolean | undefined
   }
@@ -180,27 +182,28 @@ export const makeNoSerialization: <Rpcs extends Rpc.Any, E>(
   const onRequest = (rpc: Rpc.AnyWithProps) => {
     const isStream = RpcSchema.isStreamSchema(rpc.successSchema)
     const middleware = getRpcClientMiddleware(rpc)
-    return (payload: any, options?: {
+    return (payload_: any, opts?: {
       readonly asMailbox?: boolean | undefined
       readonly streamBufferSize?: number | undefined
       readonly headers?: Headers.Input | undefined
       readonly context?: Context.Context<never> | undefined
       readonly discard?: boolean | undefined
     }) => {
-      const headers = options?.headers ? Headers.fromInput(options.headers) : Headers.empty
+      const headers = opts?.headers ? Headers.fromInput(opts.headers) : Headers.empty
+      const payload = payload_ ?? undefined
       if (!isStream) {
         const effect = Effect.useSpan(
           `${spanPrefix}.${rpc._tag}`,
-          { captureStackTrace: false },
+          { captureStackTrace: false, attributes: options.spanAttributes },
           (span) =>
             onEffectRequest(
               rpc,
               middleware,
               span,
-              "make" in rpc.payloadSchema ? rpc.payloadSchema.make(payload ?? {}) : {},
+              rpc.payloadSchema.make ? rpc.payloadSchema.make(payload) : payload,
               headers,
-              options?.context ?? Context.empty(),
-              options?.discard ?? false
+              opts?.context ?? Context.empty(),
+              opts?.discard ?? false
             )
         )
         return disableTracing ? Effect.withTracerEnabled(effect, false) : effect
@@ -209,13 +212,13 @@ export const makeNoSerialization: <Rpcs extends Rpc.Any, E>(
         onStreamRequest(
           rpc,
           middleware,
-          payload ? rpc.payloadSchema.make(payload) : {},
+          rpc.payloadSchema.make ? rpc.payloadSchema.make(payload) : payload,
           headers,
-          options?.streamBufferSize ?? 16,
-          options?.context ?? Context.empty()
+          opts?.streamBufferSize ?? 16,
+          opts?.context ?? Context.empty()
         )
       )
-      if (options?.asMailbox) return mailbox
+      if (opts?.asMailbox) return mailbox
       return Stream.unwrapScoped(Effect.map(mailbox, Mailbox.toStream))
     }
   }
@@ -314,7 +317,10 @@ export const makeNoSerialization: <Rpcs extends Rpc.Any, E>(
       return yield* Effect.interrupt
     }
 
-    const span = yield* Effect.makeSpanScoped(`${spanPrefix}.${rpc._tag}`, { captureStackTrace: false }).pipe(
+    const span = yield* Effect.makeSpanScoped(`${spanPrefix}.${rpc._tag}`, {
+      captureStackTrace: false,
+      attributes: options.spanAttributes
+    }).pipe(
       disableTracing ? Effect.withTracerEnabled(false) : identity
     )
     const fiber = Option.getOrThrow(Fiber.getCurrentFiber())
@@ -484,6 +490,7 @@ export const make: <Rpcs extends Rpc.Any>(
   group: RpcGroup.RpcGroup<Rpcs>,
   options?: {
     readonly spanPrefix?: string | undefined
+    readonly spanAttributes?: Record<string, unknown> | undefined
     readonly generateRequestId?: (() => RequestId) | undefined
     readonly disableTracing?: boolean | undefined
   } | undefined
@@ -495,6 +502,7 @@ export const make: <Rpcs extends Rpc.Any>(
   group: RpcGroup.RpcGroup<Rpcs>,
   options?: {
     readonly spanPrefix?: string | undefined
+    readonly spanAttributes?: Record<string, unknown> | undefined
     readonly generateRequestId?: (() => RequestId) | undefined
     readonly disableTracing?: boolean | undefined
   } | undefined
@@ -705,7 +713,7 @@ export const makeProtocolHttp = (client: HttpClient.HttpClient): Effect.Effect<
 
       const parser = serialization.unsafeMake()
 
-      const encoded = parser.encode(request)
+      const encoded = parser.encode(request)!
       const body = typeof encoded === "string" ?
         HttpBody.text(encoded, serialization.contentType) :
         HttpBody.uint8Array(encoded, serialization.contentType)
@@ -791,8 +799,11 @@ export const makeProtocolSocket = (options?: {
 
     let parser = serialization.unsafeMake()
 
+    const pinger = yield* makePinger(write(parser.encode(constPing)!))
+
     yield* Effect.suspend(() => {
       parser = serialization.unsafeMake()
+      pinger.reset()
       return socket.runRaw((message) => {
         try {
           const responses = parser.decode(message) as Array<FromServerEncoded>
@@ -800,13 +811,29 @@ export const makeProtocolSocket = (options?: {
           let i = 0
           return Effect.whileLoop({
             while: () => i < responses.length,
-            body: () => writeResponse(responses[i++]),
+            body: () => {
+              const response = responses[i++]
+              if (response._tag === "Pong") {
+                pinger.onPong()
+              }
+              return writeResponse(response)
+            },
             step: constVoid
           })
         } catch (defect) {
           return writeResponse({ _tag: "Defect", defect })
         }
-      })
+      }).pipe(
+        Effect.raceFirst(Effect.zipRight(
+          pinger.timeout,
+          Effect.fail(
+            new Socket.SocketGenericError({
+              reason: "OpenTimeout",
+              cause: new Error("ping timeout")
+            })
+          )
+        ))
+      )
     }).pipe(
       Effect.zipRight(Effect.fail(
         new Socket.SocketCloseError({
@@ -833,22 +860,40 @@ export const makeProtocolSocket = (options?: {
       Effect.forkScoped
     )
 
-    yield* Effect.suspend(() => write(parser.encode(constPing))).pipe(
-      Effect.delay("30 seconds"),
-      Effect.ignore,
-      Effect.forever,
-      Effect.interruptible,
-      Effect.forkScoped
-    )
-
     return {
       send(request) {
-        return Effect.orDie(write(parser.encode(request)))
+        const encoded = parser.encode(request)
+        if (encoded === undefined) return Effect.void
+        return Effect.orDie(write(encoded))
       },
       supportsAck: true,
       supportsTransferables: false
     }
   }))
+
+const makePinger = Effect.fnUntraced(function*<A, E, R>(writePing: Effect.Effect<A, E, R>) {
+  let recievedPong = true
+  const latch = Effect.unsafeMakeLatch()
+  const reset = () => {
+    recievedPong = true
+    latch.unsafeClose()
+  }
+  const onPong = () => {
+    recievedPong = true
+  }
+  yield* Effect.suspend(() => {
+    if (!recievedPong) return latch.open
+    recievedPong = false
+    return writePing
+  }).pipe(
+    Effect.delay("10 seconds"),
+    Effect.ignore,
+    Effect.forever,
+    Effect.interruptible,
+    Effect.forkScoped
+  )
+  return { timeout: latch.await, reset, onPong } as const
+})
 
 /**
  * @since 1.0.0

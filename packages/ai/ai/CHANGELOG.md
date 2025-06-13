@@ -1,5 +1,143 @@
 # @effect/ai
 
+## 0.18.16
+
+### Patch Changes
+
+- [#5040](https://github.com/Effect-TS/effect/pull/5040) [`daed158`](https://github.com/Effect-TS/effect/commit/daed158f2cf00175633284f075cf611c52aa2a1c) Thanks @tim-smart! - allow undefined mcp payloads
+
+## 0.18.15
+
+### Patch Changes
+
+- [#5038](https://github.com/Effect-TS/effect/pull/5038) [`c315989`](https://github.com/Effect-TS/effect/commit/c315989cade6c2a5c9cb157ad85f56b492675add) Thanks @tim-smart! - remove McpServer requirement from McpServer.resource
+
+## 0.18.14
+
+### Patch Changes
+
+- [#5036](https://github.com/Effect-TS/effect/pull/5036) [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e) Thanks @tim-smart! - add .of helpers to RpcGroup, Entity and AiToolkit
+
+- [#5037](https://github.com/Effect-TS/effect/pull/5037) [`dd4d380`](https://github.com/Effect-TS/effect/commit/dd4d3802f714d59171b1e9226a7babf9723ea952) Thanks @tim-smart! - eliminate McpServer requirement from resource layers
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294), [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e)]:
+  - effect@3.16.7
+  - @effect/rpc@0.61.15
+  - @effect/experimental@0.48.12
+  - @effect/platform@0.84.11
+
+## 0.18.13
+
+### Patch Changes
+
+- [#4961](https://github.com/Effect-TS/effect/pull/4961) [`aa3a819`](https://github.com/Effect-TS/effect/commit/aa3a819707c15dd39b6d9ae4b4293bd87b74e175) Thanks @IMax153! - add McpServer module
+
+  The McpServer module provides a way to implement a MCP server using Effect.
+
+  Here's an example of how to use the McpServer module to create a simple MCP
+  server with a resource template and a test prompt:
+
+  ```ts
+  import { McpSchema, McpServer } from "@effect/ai"
+  import { NodeRuntime, NodeSink, NodeStream } from "@effect/platform-node"
+  import { Effect, Layer, Logger, Schema } from "effect"
+
+  const idParam = McpSchema.param("id", Schema.NumberFromString)
+
+  // Define a resource template for a README file
+  const ReadmeTemplate = McpServer.resource`file://readme/${idParam}`({
+    name: "README Template",
+    // You can add auto-completion for the ID parameter
+    completion: {
+      id: (_) => Effect.succeed([1, 2, 3, 4, 5])
+    },
+    content: Effect.fn(function* (_uri, id) {
+      return `# MCP Server Demo - ID: ${id}`
+    })
+  })
+
+  // Define a test prompt with parameters
+  const TestPrompt = McpServer.prompt({
+    name: "Test Prompt",
+    description: "A test prompt to demonstrate MCP server capabilities",
+    parameters: Schema.Struct({
+      flightNumber: Schema.String
+    }),
+    completion: {
+      flightNumber: () => Effect.succeed(["FL123", "FL456", "FL789"])
+    },
+    content: ({ flightNumber }) =>
+      Effect.succeed(
+        `Get the booking details for flight number: ${flightNumber}`
+      )
+  })
+
+  // Merge all the resources and prompts into a single server layer
+  const ServerLayer = Layer.mergeAll(ReadmeTemplate, TestPrompt).pipe(
+    // Provide the MCP server implementation
+    Layer.provide(
+      McpServer.layerStdio({
+        name: "Demo Server",
+        version: "1.0.0",
+        stdin: NodeStream.stdin,
+        stdout: NodeSink.stdout
+      })
+    ),
+    // add a stderr logger
+    Layer.provide(Logger.add(Logger.prettyLogger({ stderr: true })))
+  )
+
+  Layer.launch(ServerLayer).pipe(NodeRuntime.runMain)
+  ```
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`bf369b2`](https://github.com/Effect-TS/effect/commit/bf369b2902a0e0b195d957c18b9efd180942cf8b), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/platform@0.84.10
+  - @effect/experimental@0.48.11
+  - @effect/rpc@0.61.14
+
+## 0.18.12
+
+### Patch Changes
+
+- Updated dependencies [[`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - effect@3.16.5
+  - @effect/experimental@0.48.10
+  - @effect/platform@0.84.9
+
+## 0.18.11
+
+### Patch Changes
+
+- [#5011](https://github.com/Effect-TS/effect/pull/5011) [`2dc5f93`](https://github.com/Effect-TS/effect/commit/2dc5f932f89d260e2f6139c9b89e0548d11d94c2) Thanks @IMax153! - disallow excess options in `AiLanguageModel.generateText` / `AiLanguageModel.streamText`
+
+- Updated dependencies []:
+  - @effect/experimental@0.48.9
+
+## 0.18.10
+
+### Patch Changes
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/experimental@0.48.9
+
+## 0.18.9
+
+### Patch Changes
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/experimental@0.48.8
+  - @effect/platform@0.84.7
+
+## 0.18.8
+
+### Patch Changes
+
+- Updated dependencies [[`a2d57c9`](https://github.com/Effect-TS/effect/commit/a2d57c9ac596445009ca12859b78e00e5d89b936)]:
+  - @effect/experimental@0.48.7
+
 ## 0.18.7
 
 ### Patch Changes

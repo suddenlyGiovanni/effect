@@ -1,5 +1,143 @@
 # @effect/platform-bun
 
+## 0.69.16
+
+### Patch Changes
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294), [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e)]:
+  - effect@3.16.7
+  - @effect/cluster@0.38.16
+  - @effect/rpc@0.61.15
+  - @effect/platform@0.84.11
+  - @effect/platform-node-shared@0.39.16
+  - @effect/sql@0.37.12
+
+## 0.69.15
+
+### Patch Changes
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`bf369b2`](https://github.com/Effect-TS/effect/commit/bf369b2902a0e0b195d957c18b9efd180942cf8b), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/platform@0.84.10
+  - @effect/cluster@0.38.15
+  - @effect/platform-node-shared@0.39.15
+  - @effect/rpc@0.61.14
+  - @effect/sql@0.37.11
+
+## 0.69.14
+
+### Patch Changes
+
+- Updated dependencies [[`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126), [`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126)]:
+  - @effect/rpc@0.61.13
+  - @effect/cluster@0.38.14
+  - @effect/platform-node-shared@0.39.14
+
+## 0.69.13
+
+### Patch Changes
+
+- Updated dependencies [[`e0d3d42`](https://github.com/Effect-TS/effect/commit/e0d3d424d8f4e6a8ada017160406991f02b3c068)]:
+  - @effect/rpc@0.61.12
+  - @effect/cluster@0.38.13
+  - @effect/platform-node-shared@0.39.13
+
+## 0.69.12
+
+### Patch Changes
+
+- Updated dependencies [[`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53)]:
+  - @effect/cluster@0.38.12
+  - @effect/rpc@0.61.11
+  - @effect/platform-node-shared@0.39.12
+
+## 0.69.11
+
+### Patch Changes
+
+- Updated dependencies [[`cc283b9`](https://github.com/Effect-TS/effect/commit/cc283b968235da3caf6c3e3a09b525fe09618fee)]:
+  - @effect/cluster@0.38.11
+  - @effect/platform-node-shared@0.39.11
+
+## 0.69.10
+
+### Patch Changes
+
+- Updated dependencies [[`6e2e886`](https://github.com/Effect-TS/effect/commit/6e2e886f060c4ac057926b68d2e441c279480c30), [`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - @effect/cluster@0.38.10
+  - effect@3.16.5
+  - @effect/platform-node-shared@0.39.10
+  - @effect/platform@0.84.9
+  - @effect/rpc@0.61.10
+  - @effect/sql@0.37.10
+
+## 0.69.9
+
+### Patch Changes
+
+- Updated dependencies [[`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2), [`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2)]:
+  - @effect/rpc@0.61.9
+  - @effect/cluster@0.38.9
+  - @effect/platform-node-shared@0.39.9
+
+## 0.69.8
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @effect/cluster@0.38.8
+  - @effect/platform-node-shared@0.39.8
+
+## 0.69.7
+
+### Patch Changes
+
+- Updated dependencies [[`22166f8`](https://github.com/Effect-TS/effect/commit/22166f80c677cad6b4719e0e0253a9d06f964626)]:
+  - @effect/cluster@0.38.7
+  - @effect/platform-node-shared@0.39.7
+
+## 0.69.6
+
+### Patch Changes
+
+- [#4998](https://github.com/Effect-TS/effect/pull/4998) [`f8ff7dc`](https://github.com/Effect-TS/effect/commit/f8ff7dccfe6ebd3409ab95c57f61764643d19a2b) Thanks @tim-smart! - expose MessageStorage in cluster clientOnly layers
+
+- Updated dependencies [[`f8ff7dc`](https://github.com/Effect-TS/effect/commit/f8ff7dccfe6ebd3409ab95c57f61764643d19a2b), [`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform-node-shared@0.39.6
+  - @effect/platform@0.84.8
+  - @effect/cluster@0.38.6
+  - @effect/rpc@0.61.8
+  - @effect/sql@0.37.9
+
+## 0.69.5
+
+### Patch Changes
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/cluster@0.38.5
+  - @effect/platform@0.84.7
+  - @effect/platform-node-shared@0.39.5
+  - @effect/rpc@0.61.7
+  - @effect/sql@0.37.8
+
+## 0.69.4
+
+### Patch Changes
+
+- Updated dependencies [[`7e59d0e`](https://github.com/Effect-TS/effect/commit/7e59d0e2e004d86b8d0778e99c6fcd173fcb682a)]:
+  - @effect/cluster@0.38.4
+  - @effect/platform-node-shared@0.39.4
+
+## 0.69.3
+
+### Patch Changes
+
+- Updated dependencies [[`59575c5`](https://github.com/Effect-TS/effect/commit/59575c5bf17a32c8b76c42e3794222b20e766581)]:
+  - @effect/cluster@0.38.3
+  - @effect/platform-node-shared@0.39.3
+  - @effect/sql@0.37.7
+
 ## 0.69.2
 
 ### Patch Changes

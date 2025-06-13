@@ -1,5 +1,134 @@
 # @effect/cluster
 
+## 0.38.16
+
+### Patch Changes
+
+- [#5036](https://github.com/Effect-TS/effect/pull/5036) [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e) Thanks @tim-smart! - add .of helpers to RpcGroup, Entity and AiToolkit
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294), [`cbac1ac`](https://github.com/Effect-TS/effect/commit/cbac1ac61a4e15ad15828563b39eef412bcee66e)]:
+  - effect@3.16.7
+  - @effect/rpc@0.61.15
+  - @effect/platform@0.84.11
+  - @effect/sql@0.37.12
+  - @effect/workflow@0.1.14
+
+## 0.38.15
+
+### Patch Changes
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`bf369b2`](https://github.com/Effect-TS/effect/commit/bf369b2902a0e0b195d957c18b9efd180942cf8b), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/platform@0.84.10
+  - @effect/rpc@0.61.14
+  - @effect/sql@0.37.11
+  - @effect/workflow@0.1.13
+
+## 0.38.14
+
+### Patch Changes
+
+- Updated dependencies [[`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126), [`ee3a197`](https://github.com/Effect-TS/effect/commit/ee3a1973f54d7611ae99979edfed3020e94e1126)]:
+  - @effect/rpc@0.61.13
+  - @effect/workflow@0.1.12
+
+## 0.38.13
+
+### Patch Changes
+
+- Updated dependencies [[`e0d3d42`](https://github.com/Effect-TS/effect/commit/e0d3d424d8f4e6a8ada017160406991f02b3c068)]:
+  - @effect/rpc@0.61.12
+  - @effect/workflow@0.1.11
+
+## 0.38.12
+
+### Patch Changes
+
+- [#4750](https://github.com/Effect-TS/effect/pull/4750) [`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53) Thanks @tim-smart! - add disableFatalDefects option to cluster entities
+
+- Updated dependencies [[`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53), [`dca92fd`](https://github.com/Effect-TS/effect/commit/dca92fd8cf41f07561f55d863def5a9f62275f53)]:
+  - @effect/rpc@0.61.11
+  - @effect/workflow@0.1.10
+
+## 0.38.11
+
+### Patch Changes
+
+- [#5017](https://github.com/Effect-TS/effect/pull/5017) [`cc283b9`](https://github.com/Effect-TS/effect/commit/cc283b968235da3caf6c3e3a09b525fe09618fee) Thanks @tim-smart! - add more spans to ClusterWorkflowEngine
+
+- Updated dependencies [[`d350176`](https://github.com/Effect-TS/effect/commit/d3501768d42d7ff3ebc2d414c95cc1fcce15894a)]:
+  - @effect/workflow@0.1.9
+
+## 0.38.10
+
+### Patch Changes
+
+- [#5016](https://github.com/Effect-TS/effect/pull/5016) [`6e2e886`](https://github.com/Effect-TS/effect/commit/6e2e886f060c4ac057926b68d2e441c279480c30) Thanks @tim-smart! - fix ShardManager metrics
+
+- Updated dependencies [[`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - effect@3.16.5
+  - @effect/platform@0.84.9
+  - @effect/rpc@0.61.10
+  - @effect/sql@0.37.10
+  - @effect/workflow@0.1.8
+
+## 0.38.9
+
+### Patch Changes
+
+- Updated dependencies [[`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2), [`7bf6cb9`](https://github.com/Effect-TS/effect/commit/7bf6cb943810e403f472a901ed29ccbbf76a46b2)]:
+  - @effect/rpc@0.61.9
+  - @effect/workflow@0.1.7
+
+## 0.38.8
+
+### Patch Changes
+
+- Updated dependencies [[`2a9a0ef`](https://github.com/Effect-TS/effect/commit/2a9a0ef1181a4419e239edb2abfd95f359a4b7f7)]:
+  - @effect/workflow@0.1.6
+
+## 0.38.7
+
+### Patch Changes
+
+- [#4999](https://github.com/Effect-TS/effect/pull/4999) [`22166f8`](https://github.com/Effect-TS/effect/commit/22166f80c677cad6b4719e0e0253a9d06f964626) Thanks @tim-smart! - make registerEntity a no-op on clientOnly cluster
+
+## 0.38.6
+
+### Patch Changes
+
+- Updated dependencies [[`8b9db77`](https://github.com/Effect-TS/effect/commit/8b9db7742846af0f58fd8e8b7acb7f4f5ff487ec)]:
+  - @effect/platform@0.84.8
+  - @effect/rpc@0.61.8
+  - @effect/sql@0.37.9
+  - @effect/workflow@0.1.5
+
+## 0.38.5
+
+### Patch Changes
+
+- Updated dependencies [[`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f), [`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28), [`34333ab`](https://github.com/Effect-TS/effect/commit/34333ab08de42a5269ddb13f66de1536ad6f249f)]:
+  - @effect/workflow@0.1.4
+  - effect@3.16.4
+  - @effect/platform@0.84.7
+  - @effect/rpc@0.61.7
+  - @effect/sql@0.37.8
+
+## 0.38.4
+
+### Patch Changes
+
+- [#4984](https://github.com/Effect-TS/effect/pull/4984) [`7e59d0e`](https://github.com/Effect-TS/effect/commit/7e59d0e2e004d86b8d0778e99c6fcd173fcb682a) Thanks @tim-smart! - expose Sharding.pollStorage api
+
+## 0.38.3
+
+### Patch Changes
+
+- [#4983](https://github.com/Effect-TS/effect/pull/4983) [`59575c5`](https://github.com/Effect-TS/effect/commit/59575c5bf17a32c8b76c42e3794222b20e766581) Thanks @tim-smart! - do not resume already running workflows
+
+- Updated dependencies []:
+  - @effect/sql@0.37.7
+
 ## 0.38.2
 
 ### Patch Changes

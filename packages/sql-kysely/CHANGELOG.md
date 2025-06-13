@@ -1,5 +1,51 @@
 # @effect/sql-kysely
 
+## 0.33.12
+
+### Patch Changes
+
+- Updated dependencies [[`1bb0d8a`](https://github.com/Effect-TS/effect/commit/1bb0d8ab96782e99434356266b38251554ea0294)]:
+  - effect@3.16.7
+  - @effect/sql@0.37.12
+
+## 0.33.11
+
+### Patch Changes
+
+- Updated dependencies [[`a5f7595`](https://github.com/Effect-TS/effect/commit/a5f75956ef9a15a83c416517ef493f0ee2f5ee8a), [`a02470c`](https://github.com/Effect-TS/effect/commit/a02470c75579e91525a25adb3f21b3650d042fdd), [`f891d45`](https://github.com/Effect-TS/effect/commit/f891d45adffdafd3f94a2eca23faa354e3a409a8)]:
+  - effect@3.16.6
+  - @effect/sql@0.37.11
+
+## 0.33.10
+
+### Patch Changes
+
+- Updated dependencies [[`bf418ef`](https://github.com/Effect-TS/effect/commit/bf418ef14a0f2ec965535793d5cea8fa8ba177ac)]:
+  - effect@3.16.5
+  - @effect/sql@0.37.10
+
+## 0.33.9
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @effect/sql@0.37.9
+
+## 0.33.8
+
+### Patch Changes
+
+- Updated dependencies [[`74ab9a0`](https://github.com/Effect-TS/effect/commit/74ab9a0a9e16d6e019369d256e1e24175c8bc3f3), [`770008e`](https://github.com/Effect-TS/effect/commit/770008eca3aad2899a2ed951236e575793294b28)]:
+  - effect@3.16.4
+  - @effect/sql@0.37.8
+
+## 0.33.7
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @effect/sql@0.37.7
+
 ## 0.33.6
 
 ### Patch Changes
