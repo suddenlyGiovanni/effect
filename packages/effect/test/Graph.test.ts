@@ -2021,14 +2021,14 @@ describe("Graph", () => {
       const graph = Graph.directed<string, number>()
       const dot = Graph.toGraphViz(graph)
 
-      expect(dot).toBe("digraph G {\n}")
+      expect(dot).toBe("digraph \"G\" {\n}")
     })
 
     it("should export empty undirected graph", () => {
       const graph = Graph.undirected<string, number>()
       const dot = Graph.toGraphViz(graph)
 
-      expect(dot).toBe("graph G {\n}")
+      expect(dot).toBe("graph \"G\" {\n}")
     })
 
     it("should export directed graph with nodes and edges", () => {
@@ -2043,7 +2043,7 @@ describe("Graph", () => {
 
       const dot = Graph.toGraphViz(graph)
 
-      expect(dot).toContain("digraph G {")
+      expect(dot).toContain("digraph \"G\" {")
       expect(dot).toContain("\"0\" [label=\"Node A\"];")
       expect(dot).toContain("\"1\" [label=\"Node B\"];")
       expect(dot).toContain("\"2\" [label=\"Node C\"];")
@@ -2062,7 +2062,7 @@ describe("Graph", () => {
 
       const dot = Graph.toGraphViz(graph)
 
-      expect(dot).toContain("graph G {")
+      expect(dot).toContain("graph \"G\" {")
       expect(dot).toContain("\"0\" -- \"1\" [label=\"1\"];")
     })
 
@@ -2079,7 +2079,7 @@ describe("Graph", () => {
         graphName: "MyGraph"
       })
 
-      expect(dot).toContain("digraph MyGraph {")
+      expect(dot).toContain("digraph \"MyGraph\" {")
       expect(dot).toContain("\"0\" [label=\"Alice\"];")
       expect(dot).toContain("\"1\" [label=\"Bob\"];")
       expect(dot).toContain("\"0\" -> \"1\" [label=\"weight: 42\"];")
@@ -2097,6 +2097,38 @@ describe("Graph", () => {
       expect(dot).toContain("\"0\" [label=\"Node \\\"A\\\"\"];")
       expect(dot).toContain("\"1\" [label=\"Node \\\"B\\\"\"];")
       expect(dot).toContain("\"0\" -> \"1\" [label=\"Edge \\\"1\\\"\"];")
+    })
+
+    it("should quote graph names", () => {
+      const graph = Graph.directed<string, string>()
+
+      strictEqual(Graph.toGraphViz(graph, { graphName: "MyGraph" }), "digraph \"MyGraph\" {\n}")
+      strictEqual(Graph.toGraphViz(graph, { graphName: "My Graph" }), "digraph \"My Graph\" {\n}")
+      strictEqual(Graph.toGraphViz(graph, { graphName: "" }), "digraph \"\" {\n}")
+      strictEqual(Graph.toGraphViz(graph, { graphName: "graph" }), "digraph \"graph\" {\n}")
+      strictEqual(Graph.toGraphViz(graph, { graphName: "Node" }), "digraph \"Node\" {\n}")
+      strictEqual(Graph.toGraphViz(graph, { graphName: "My \"Graph\"" }), "digraph \"My \\\"Graph\\\"\" {\n}")
+    })
+
+    it("should escape labels as literal text", () => {
+      const graph = Graph.directed<string, string>((mutable) => {
+        const nodeA = Graph.addNode(mutable, "C:\\new\\path")
+        const nodeB = Graph.addNode(mutable, "Line 1\nLine 2")
+        Graph.addEdge(mutable, nodeA, nodeB, "edge\\label\nnext")
+      })
+
+      const dot = Graph.toGraphViz(graph)
+
+      strictEqual(
+        dot,
+        [
+          "digraph \"G\" {",
+          "  \"0\" [label=\"C:\\\\new\\\\path\"];",
+          "  \"1\" [label=\"Line 1\\nLine 2\"];",
+          "  \"0\" -> \"1\" [label=\"edge\\\\label\\nnext\"];",
+          "}"
+        ].join("\n")
+      )
     })
 
     it("should demonstrate graph visualization", () => {
@@ -2120,7 +2152,7 @@ describe("Graph", () => {
       // Uncomment the next line to see the GraphViz output in test console
       // console.log("\nDependency Graph DOT format:\n" + dot)
 
-      expect(dot).toContain("digraph DependencyGraph {")
+      expect(dot).toContain("digraph \"DependencyGraph\" {")
       expect(dot).toContain("\"0\" [label=\"App\"];")
       expect(dot).toContain("\"0\" -> \"1\" [label=\"uses\"];")
       expect(dot).toContain("\"0\" -> \"2\" [label=\"stores\"];")
@@ -2149,7 +2181,7 @@ describe("Graph", () => {
       // Uncomment the next line to see the GraphViz output in test console
       // console.log("\nSocial Network DOT format:\n" + dot)
 
-      expect(dot).toContain("graph SocialNetwork {")
+      expect(dot).toContain("graph \"SocialNetwork\" {")
       expect(dot).toContain("\"0\" [label=\"Alice\"];")
       expect(dot).toContain("\"0\" -- \"1\" [label=\"friends\"];")
       expect(dot).toContain("\"1\" -- \"2\" [label=\"friends\"];")

@@ -2753,6 +2753,9 @@ export interface GraphVizOptions<N, E> {
   readonly graphName?: string
 }
 
+const escapeGraphVizString = (value: string): string =>
+  value.replace(/\\/g, "\\\\").replace(/"/g, "\\\"").replace(/\r\n|\r|\n/g, "\\n")
+
 /**
  * Exports a graph to GraphViz DOT format for visualization.
  *
@@ -2772,7 +2775,7 @@ export interface GraphVizOptions<N, E> {
  *
  * const dot = Graph.toGraphViz(graph)
  * console.log(dot)
- * // digraph G {
+ * // digraph "G" {
  * //   "0" [label="Node A"];
  * //   "1" [label="Node B"];
  * //   "2" [label="Node C"];
@@ -2806,19 +2809,20 @@ export const toGraphViz: {
   const isDirected = graph.type === "directed"
   const graphType = isDirected ? "digraph" : "graph"
   const edgeOperator = isDirected ? "->" : "--"
+  const graphId = `"${escapeGraphVizString(graphName)}"`
 
   const lines: Array<string> = []
-  lines.push(`${graphType} ${graphName} {`)
+  lines.push(`${graphType} ${graphId} {`)
 
   // Add nodes
   for (const [nodeIndex, nodeData] of graph.nodes) {
-    const label = nodeLabel(nodeData).replace(/"/g, "\\\"")
+    const label = escapeGraphVizString(nodeLabel(nodeData))
     lines.push(`  "${nodeIndex}" [label="${label}"];`)
   }
 
   // Add edges
   for (const [, edgeData] of graph.edges) {
-    const label = edgeLabel(edgeData.data).replace(/"/g, "\\\"")
+    const label = escapeGraphVizString(edgeLabel(edgeData.data))
     lines.push(`  "${edgeData.source}" ${edgeOperator} "${edgeData.target}" [label="${label}"];`)
   }
 
