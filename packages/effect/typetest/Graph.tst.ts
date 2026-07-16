@@ -1,4 +1,4 @@
-import { Graph, pipe } from "effect"
+import { Graph, hole, pipe } from "effect"
 import { describe, expect, it } from "tstyche"
 
 declare const directed: Graph.DirectedGraph<string, number>
@@ -62,6 +62,38 @@ describe("Graph", () => {
     expect(animalGraph).type.not.toBeAssignableTo<Graph.DirectedGraph<Dog, 1>>()
     expect(dogMutableGraph).type.not.toBeAssignableTo<Graph.MutableDirectedGraph<Animal, number>>()
     expect(animalMutableGraph).type.not.toBeAssignableTo<Graph.MutableDirectedGraph<Dog, 1>>()
+  })
+
+  it("guards", () => {
+    const input = hole<unknown>()
+    if (Graph.isGraph(input)) {
+      expect(input).type.toBe<
+        Graph.Graph<unknown, unknown, Graph.Kind> | Graph.MutableGraph<unknown, unknown, Graph.Kind>
+      >()
+    }
+
+    const known = hole<
+      | Graph.UndirectedGraph<string, number>
+      | Graph.MutableUndirectedGraph<string, number>
+      | { readonly _tag: "other" }
+    >()
+    if (Graph.isGraph(known)) {
+      expect(known).type.toBe<Graph.UndirectedGraph<string, number> | Graph.MutableUndirectedGraph<string, number>>()
+    }
+
+    const mixed = hole<
+      | Graph.DirectedGraph<string, number>
+      | Graph.UndirectedGraph<string, number>
+      | Graph.MutableDirectedGraph<string, number>
+      | Graph.MutableUndirectedGraph<string, number>
+      | { readonly _tag: "other" }
+    >()
+    if (Graph.isGraph(mixed)) {
+      expect(mixed.type).type.toBe<Graph.Kind>()
+      if (mixed.type === "undirected") {
+        expect(mixed.type).type.toBe<"undirected">()
+      }
+    }
   })
 
   it("compose", () => {

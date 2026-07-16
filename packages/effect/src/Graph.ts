@@ -435,7 +435,7 @@ function assertMutable<N, E, T extends Kind = "directed">(
 
 /**
  * Returns `true` if a value has the graph runtime type identifier, narrowing
- * it to a `Graph`.
+ * it to an immutable or mutable graph.
  *
  * **When to use**
  *
@@ -444,12 +444,15 @@ function assertMutable<N, E, T extends Kind = "directed">(
  * **Gotchas**
  *
  * This guard checks the shared graph runtime type identifier and does not
- * distinguish immutable graphs from mutable graphs.
+ * distinguish immutable graphs from mutable graphs or directed graphs from
+ * undirected graphs.
  *
  * @category guards
  * @since 4.0.0
  */
-export const isGraph = (u: unknown): u is Graph<unknown, unknown> => hasProperty(u, TypeId)
+export const isGraph = <N = unknown, E = unknown, T extends Kind = Kind, U = never>(
+  u: U | Graph<N, E, T> | MutableGraph<N, E, T>
+): u is Graph<N, E, T> | MutableGraph<N, E, T> => hasProperty(u, TypeId)
 
 /**
  * Creates a graph constructor for the specified graph kind.
