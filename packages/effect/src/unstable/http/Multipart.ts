@@ -452,7 +452,9 @@ export const makeChannel = <IE>(headers: Record<string, string>): Channel.Channe
           exit = Option.some(Exit.fail(convertError(error_)))
         },
         onDone() {
-          exit = Option.some(Exit.fail(Cause.Done()))
+          if (Option.isNone(exit)) {
+            exit = Option.some(Exit.fail(Cause.Done()))
+          }
         }
       })
 
