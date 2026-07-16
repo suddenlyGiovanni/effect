@@ -19,6 +19,24 @@ const makeReversedUndirectedPath = () =>
     Graph.addEdge(mutable, c, b, 1)
   })
 
+const makeSingleEdgeGraph = (weight: number) =>
+  Graph.directed<string, number>((mutable) => {
+    const source = Graph.addNode(mutable, "source")
+    const target = Graph.addNode(mutable, "target")
+    Graph.addEdge(mutable, source, target, weight)
+  })
+
+const unsupportedEdgeWeights = [NaN, -Infinity] as const
+
+const assertGraphError = (thunk: () => void, message: string) => {
+  throws(thunk, (error) => {
+    strictEqual(error instanceof Graph.GraphError, true)
+    if (error instanceof Graph.GraphError) {
+      strictEqual(error.message, message)
+    }
+  })
+}
+
 type SetNode = { readonly id: string; readonly label: string }
 
 class SetNodeKey implements Equal.Equal {
@@ -2967,6 +2985,34 @@ describe("Graph", () => {
       )
     })
 
+    it("should throw for NaN and negative infinity weights", () => {
+      for (const weight of unsupportedEdgeWeights) {
+        const graph = makeSingleEdgeGraph(weight)
+
+        assertGraphError(
+          () =>
+            Graph.dijkstra(graph, {
+              source: 0,
+              target: 1,
+              cost: (edge) => edge
+            }),
+          "Dijkstra's algorithm requires non-negative edge weights"
+        )
+      }
+    })
+
+    it("should treat infinity weights as unreachable", () => {
+      const graph = makeSingleEdgeGraph(Infinity)
+
+      const result = Graph.dijkstra(graph, {
+        source: 0,
+        target: 1,
+        cost: (edge) => edge
+      })
+
+      assertNone(result)
+    })
+
     it("should throw for negative weights before early target termination", () => {
       const graph = Graph.directed<string, number>((mutable) => {
         const source = Graph.addNode(mutable, "source")
@@ -3112,6 +3158,36 @@ describe("Graph", () => {
       ).toThrow("A* algorithm requires non-negative edge weights")
     })
 
+    it("should throw for NaN and negative infinity weights", () => {
+      for (const weight of unsupportedEdgeWeights) {
+        const graph = makeSingleEdgeGraph(weight)
+
+        assertGraphError(
+          () =>
+            Graph.astar(graph, {
+              source: 0,
+              target: 1,
+              cost: (edge) => edge,
+              heuristic: () => 0
+            }),
+          "A* algorithm requires non-negative edge weights"
+        )
+      }
+    })
+
+    it("should treat infinity weights as unreachable", () => {
+      const graph = makeSingleEdgeGraph(Infinity)
+
+      const result = Graph.astar(graph, {
+        source: 0,
+        target: 1,
+        cost: (edge) => edge,
+        heuristic: () => 0
+      })
+
+      assertNone(result)
+    })
+
     it("should throw for negative weights before early target termination", () => {
       const graph = Graph.directed<{ x: number; y: number }, number>((mutable) => {
         const source = Graph.addNode(mutable, { x: 0, y: 0 })
@@ -3212,6 +3288,34 @@ describe("Graph", () => {
       })
 
       assertSome(result, { path: [0], distance: 0, costs: [] })
+    })
+
+    it("should throw for NaN and negative infinity weights", () => {
+      for (const weight of unsupportedEdgeWeights) {
+        const graph = makeSingleEdgeGraph(weight)
+
+        assertGraphError(
+          () =>
+            Graph.bellmanFord(graph, {
+              source: 0,
+              target: 1,
+              cost: (edge) => edge
+            }),
+          "Bellman-Ford algorithm does not support NaN or -Infinity edge weights"
+        )
+      }
+    })
+
+    it("should treat infinity weights as unreachable", () => {
+      const graph = makeSingleEdgeGraph(Infinity)
+
+      const result = Graph.bellmanFord(graph, {
+        source: 0,
+        target: 1,
+        cost: (edge) => edge
+      })
+
+      assertNone(result)
     })
 
     it("should detect a directed negative self-loop when source equals target", () => {
@@ -3344,6 +3448,27 @@ describe("Graph", () => {
       expect(result.distances.get(0)?.get(0)).toBe(0)
       expect(result.paths.get(0)?.get(0)).toEqual([0])
       expect(result.costs.get(0)?.get(0)).toEqual([])
+    })
+
+    it("should throw for NaN and negative infinity weights", () => {
+      for (const weight of unsupportedEdgeWeights) {
+        const graph = makeSingleEdgeGraph(weight)
+
+        assertGraphError(
+          () => Graph.floydWarshall(graph, (edge) => edge),
+          "Floyd-Warshall algorithm does not support NaN or -Infinity edge weights"
+        )
+      }
+    })
+
+    it("should treat infinity weights as unreachable", () => {
+      const graph = makeSingleEdgeGraph(Infinity)
+
+      const result = Graph.floydWarshall(graph, (edge) => edge)
+
+      expect(result.distances.get(0)?.get(1)).toBe(Infinity)
+      expect(result.paths.get(0)?.get(1)).toBeNull()
+      expect(result.costs.get(0)?.get(1)).toEqual([])
     })
 
     it("should preserve null edge data in direct paths", () => {

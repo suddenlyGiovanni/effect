@@ -4063,12 +4063,13 @@ export interface PathResult<E> {
  * **Details**
  *
  * Specifies the source and target node indices, plus a cost function that maps
- * each edge's data to a non-negative numeric weight.
+ * each edge's data to a non-negative numeric weight. `Infinity` is allowed and
+ * behaves like an impassable edge.
  *
  * **Gotchas**
  *
  * `dijkstra` throws a `GraphError` when either endpoint does not exist or when
- * the cost function returns a negative weight.
+ * the cost function returns a negative weight or `NaN`.
  *
  * @see {@link dijkstra} for the algorithm that consumes this configuration
  * @see {@link AstarConfig} for heuristic shortest-path search
@@ -4083,32 +4084,16 @@ export interface DijkstraConfig<E> {
   cost: (edgeData: E) => number
 }
 
-const validateNonNegativeEdgeWeights = <N, E, T extends Kind = "directed">(
-  graph: Graph<N, E, T> | MutableGraph<N, E, T>,
-  cost: (edgeData: E) => number,
-  algorithm: string
-): Map<EdgeIndex, number> => {
-  const impl = graphImpl(graph)
-  const edgeWeights = new Map<EdgeIndex, number>()
-  for (const [edgeIndex, edgeData] of impl.edges) {
-    const weight = cost(edgeData.data)
-    if (weight < 0 || Number.isNaN(weight)) {
-      throw new GraphError({ message: `${algorithm} requires non-negative edge weights` })
-    }
-    edgeWeights.set(edgeIndex, weight)
-  }
-  return edgeWeights
-}
-
 /**
  * Finds the shortest path from the configured source node to the target node
  * using Dijkstra's algorithm.
  *
  * **Details**
  *
- * Edge costs must be non-negative. Returns `Option.none()` when the target is
- * not reachable, and throws a `GraphError` when either endpoint is missing or a
- * negative edge cost is encountered.
+ * Edge costs must be non-negative and not `NaN`. `Infinity` is allowed and
+ * behaves like an impassable edge. Returns `Option.none()` when the target is
+ * not reachable, and throws a `GraphError` when either endpoint is missing or an
+ * edge cost is negative or `NaN`.
  *
  * **Example** (Finding shortest paths with Dijkstra)
  *
@@ -4160,7 +4145,14 @@ export const dijkstra: {
     throw missingNode(config.target)
   }
 
-  const edgeWeights = validateNonNegativeEdgeWeights(graph, config.cost, "Dijkstra's algorithm")
+  const edgeWeights = new Map<EdgeIndex, number>()
+  for (const [edgeIndex, edgeData] of impl.edges) {
+    const weight = config.cost(edgeData.data)
+    if (Number.isNaN(weight) || weight < 0) {
+      throw new GraphError({ message: "Dijkstra's algorithm requires non-negative edge weights" })
+    }
+    edgeWeights.set(edgeIndex, weight)
+  }
 
   // Early return if source equals target
   if (config.source === config.target) {
@@ -4304,8 +4296,9 @@ export interface AllPairsResult<E> {
  * **Details**
  *
  * Computes distances, reconstructed node paths, and edge-data paths for every
- * source and target pair in O(V^3) time. Negative edge weights are allowed, but
- * a `GraphError` is thrown if any negative cycle is detected.
+ * source and target pair in O(V^3) time. Negative edge weights are allowed, and
+ * `Infinity` behaves like an impassable edge. A `GraphError` is thrown if any
+ * edge weight is `NaN` or `-Infinity`, or if any negative cycle is detected.
  *
  * **Example** (Finding all-pairs shortest paths)
  *
@@ -4364,6 +4357,9 @@ export const floydWarshall: {
   // Set edge weights
   for (const [, edgeData] of impl.edges) {
     const weight = cost(edgeData.data)
+    if (Number.isNaN(weight) || weight === -Infinity) {
+      throw new GraphError({ message: "Floyd-Warshall algorithm does not support NaN or -Infinity edge weights" })
+    }
     const i = edgeData.source
     const j = edgeData.target
 
@@ -4469,8 +4465,9 @@ export const floydWarshall: {
  *
  * **Details**
  *
- * Specifies the source and target node indices, an edge-cost function, and a
- * heuristic that estimates the remaining cost from a node to the target.
+ * Specifies the source and target node indices, an edge-cost function that maps
+ * edge data to non-negative weights, and a heuristic that estimates the
+ * remaining cost from a node to the target.
  *
  * @see {@link astar} for the algorithm that consumes this configuration
  * @see {@link DijkstraConfig} for shortest paths without a heuristic
@@ -4492,10 +4489,11 @@ export interface AstarConfig<E, N> {
  *
  * **Details**
  *
- * The edge-cost function must return non-negative weights, and the heuristic
+ * The edge-cost function must return non-negative weights and not `NaN`.
+ * `Infinity` is allowed and behaves like an impassable edge. The heuristic
  * should be consistent to preserve shortest-path guarantees. Returns
  * `Option.none()` when the target is not reachable, and throws a `GraphError`
- * when either endpoint is missing or a negative edge cost is encountered.
+ * when either endpoint is missing or an edge cost is negative or `NaN`.
  *
  * **Example** (Finding shortest paths with A-star)
  *
@@ -4553,7 +4551,14 @@ export const astar: {
     throw missingNode(config.target)
   }
 
-  const edgeWeights = validateNonNegativeEdgeWeights(graph, config.cost, "A* algorithm")
+  const edgeWeights = new Map<EdgeIndex, number>()
+  for (const [edgeIndex, edgeData] of impl.edges) {
+    const weight = config.cost(edgeData.data)
+    if (Number.isNaN(weight) || weight < 0) {
+      throw new GraphError({ message: "A* algorithm requires non-negative edge weights" })
+    }
+    edgeWeights.set(edgeIndex, weight)
+  }
 
   // Early return if source equals target
   if (config.source === config.target) {
@@ -4720,9 +4725,10 @@ export interface BellmanFordConfig<E> {
  *
  * **Details**
  *
- * Negative edge weights are allowed. Returns `Option.none()` when the target is
- * unreachable or when a negative cycle affects the path to the target. Throws a
- * `GraphError` when either endpoint is missing.
+ * Negative edge weights are allowed, and `Infinity` behaves like an impassable
+ * edge. Returns `Option.none()` when the target is unreachable or when a
+ * negative cycle affects the path to the target. Throws a `GraphError` when
+ * either endpoint is missing or an edge weight is `NaN` or `-Infinity`.
  *
  * **Example** (Finding shortest paths with Bellman-Ford)
  *
@@ -4788,6 +4794,9 @@ export const bellmanFord: {
   const edges: Array<{ source: NodeIndex; target: NodeIndex; weight: number; edgeData: E }> = []
   for (const [, edgeData] of impl.edges) {
     const weight = config.cost(edgeData.data)
+    if (Number.isNaN(weight) || weight === -Infinity) {
+      throw new GraphError({ message: "Bellman-Ford algorithm does not support NaN or -Infinity edge weights" })
+    }
     edges.push({
       source: edgeData.source,
       target: edgeData.target,
