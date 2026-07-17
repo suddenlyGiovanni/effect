@@ -878,10 +878,20 @@ const stepCron = (cron: Cron, now: DateTime.DateTime.Input | undefined, directio
             const nextDay = table.day[currentDay]
             if (nextDay === undefined) {
               if (reverse) {
-                const prevMonthDays = daysInMonth(
-                  new Date(Date.UTC(current.getUTCFullYear(), current.getUTCMonth(), 0))
-                )
-                b = -(currentDay + (prevMonthDays - boundary.day))
+                const previous = new Date(current)
+                // Day zero is the previous month's last day. These two probes cover every
+                // valid day-of-month.
+                previous.setUTCDate(0)
+                let day = table.day[previous.getUTCDate()]
+                if (day === undefined) {
+                  previous.setUTCDate(0)
+                  day = table.day[previous.getUTCDate()]
+                }
+                if (day === undefined) {
+                  throw new Error("Unable to find cron date")
+                }
+                previous.setUTCDate(day)
+                b = (previous.getTime() - current.getTime()) / 86_400_000
               } else {
                 b = daysInMonth(current) - currentDay + boundary.day
               }
@@ -908,10 +918,10 @@ const stepCron = (cron: Cron, now: DateTime.DateTime.Input | undefined, directio
         const currentMonth = current.getUTCMonth() + 1
         const nextMonth = table.month[currentMonth]
         const clampBoundaryDay = (targetMonthIndex: number): number => {
-          if (cron.days.size !== 0 && cron.weekdays.size === 0) {
-            return boundary.day
-          }
           const maxDayInMonth = daysInMonth(new Date(Date.UTC(current.getUTCFullYear(), targetMonthIndex + 1, 0)))
+          if (cron.days.size !== 0 && cron.weekdays.size === 0) {
+            return reverse ? table.day[maxDayInMonth] ?? maxDayInMonth : boundary.day
+          }
           return reverse ? maxDayInMonth : 1
         }
         if (nextMonth === undefined) {
@@ -933,7 +943,7 @@ const stepCron = (cron: Cron, now: DateTime.DateTime.Input | undefined, directio
       return
     }
 
-    throw new Error("Unable to find " + direction + " cron date")
+    throw new Error("Unable to find cron date")
   })
 
   return dateTime.toDateUtc(result)
