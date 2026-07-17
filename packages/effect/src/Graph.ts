@@ -495,7 +495,7 @@ export const isGraph = <N = unknown, E = unknown, T extends Kind = Kind, U = nev
  * @since 4.0.0
  */
 export const make =
-  <T extends Kind>(type: T) => <N, E>(mutate?: (mutable: MutableGraph<N, E, T>) => void): Graph<N, E, T> => {
+  <T extends Kind>(type: T) => <N, E>(mutate?: (mutable: MutableGraph<N, E, T>) => undefined): Graph<N, E, T> => {
     const graph: Mutable<GraphImpl<N, E, T>> = Object.create(ProtoGraph)
     graph.type = type
     graph.nodes = new Map()
@@ -513,8 +513,7 @@ export const make =
 
     graph.mutable = true
     const mutable = graph as unknown as MutableGraph<N, E, T>
-    mutate(mutable)
-    return endMutation(mutable)
+    return mutateScoped(mutable, mutate)
   }
 
 /**
@@ -539,7 +538,7 @@ export const make =
  * @since 3.18.0
  */
 export const directed: <N, E>(
-  mutate?: (mutable: MutableDirectedGraph<N, E>) => void
+  mutate?: (mutable: MutableDirectedGraph<N, E>) => undefined
 ) => DirectedGraph<N, E> = make("directed")
 
 /**
@@ -564,7 +563,7 @@ export const directed: <N, E>(
  * @since 3.18.0
  */
 export const undirected: <N, E>(
-  mutate?: (mutable: MutableUndirectedGraph<N, E>) => void
+  mutate?: (mutable: MutableUndirectedGraph<N, E>) => undefined
 ) => UndirectedGraph<N, E> = make("undirected")
 
 // =============================================================================
@@ -651,6 +650,20 @@ export const endMutation = <N, E, T extends Kind = "directed">(
   return graph as unknown as Graph<N, E, T>
 }
 
+/** @internal */
+const mutateScoped = <N, E, T extends Kind>(
+  mutable: MutableGraph<N, E, T>,
+  f: (mutable: MutableGraph<N, E, T>) => undefined
+): Graph<N, E, T> => {
+  let graph: Graph<N, E, T>
+  try {
+    f(mutable)
+  } finally {
+    graph = endMutation(mutable)
+  }
+  return graph
+}
+
 /**
  * Performs scoped mutations on a graph, automatically managing the mutation lifecycle.
  *
@@ -675,19 +688,18 @@ export const endMutation = <N, E, T extends Kind = "directed">(
  */
 export const mutate: {
   <N, E, T extends Kind = "directed">(
-    f: (mutable: MutableGraph<N, E, T>) => void
+    f: (mutable: MutableGraph<N, E, T>) => undefined
   ): (graph: Graph<N, E, T>) => Graph<N, E, T>
   <N, E, T extends Kind = "directed">(
     graph: Graph<N, E, T>,
-    f: (mutable: MutableGraph<N, E, T>) => void
+    f: (mutable: MutableGraph<N, E, T>) => undefined
   ): Graph<N, E, T>
 } = dual(2, <N, E, T extends Kind = "directed">(
   graph: Graph<N, E, T>,
-  f: (mutable: MutableGraph<N, E, T>) => void
+  f: (mutable: MutableGraph<N, E, T>) => undefined
 ): Graph<N, E, T> => {
   const mutable = beginMutation(graph)
-  f(mutable)
-  return endMutation(mutable)
+  return mutateScoped(mutable, f)
 })
 
 // =============================================================================
