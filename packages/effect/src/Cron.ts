@@ -257,7 +257,9 @@ export const isCron = (u: unknown): u is Cron => hasProperty(u, TypeId)
  * days, months, and weekdays the schedule should match. Empty arrays mean
  * "match all" for that time unit. When both days and weekdays are restricted,
  * the default matches either field; set `and: true` to require both fields to
- * match.
+ * match. Weekdays range from `0` (Sunday) to `7` (also Sunday). The constructor
+ * throws a `RangeError` when a field contains a non-integer or out-of-range
+ * value.
  *
  * **Example** (Creating schedules from constraints)
  *
@@ -363,12 +365,12 @@ export const make = (values: {
   readonly tz?: DateTime.TimeZone | undefined
 }): Cron => {
   const o: Mutable<Cron> = Object.create(CronProto)
-  o.seconds = new Set(Arr.sort(values.seconds ?? [0], N.Order))
-  o.minutes = new Set(Arr.sort(values.minutes, N.Order))
-  o.hours = new Set(Arr.sort(values.hours, N.Order))
-  o.days = new Set(Arr.sort(values.days, N.Order))
-  o.months = new Set(Arr.sort(values.months, N.Order))
-  o.weekdays = new Set(Arr.sort(values.weekdays, N.Order))
+  o.seconds = restrictions.seconds(values.seconds ?? [0])
+  o.minutes = restrictions.minutes(values.minutes)
+  o.hours = restrictions.hours(values.hours)
+  o.days = restrictions.days(values.days)
+  o.months = restrictions.months(values.months)
+  o.weekdays = restrictions.weekdays(values.weekdays)
   o.and = values.and === true
   o.tz = Option.fromUndefinedOr(values.tz)
 
@@ -398,31 +400,57 @@ export const make = (values: {
   }
 
   o.next = {
-    second: lookupTable(seconds, 60, "next"),
-    minute: lookupTable(minutes, 60, "next"),
-    hour: lookupTable(hours, 24, "next"),
-    day: lookupTable(days, 32, "next"),
-    month: lookupTable(months, 13, "next"),
-    weekday: lookupTable(weekdays, 7, "next")
+    second: lookup.next.second(seconds),
+    minute: lookup.next.minute(minutes),
+    hour: lookup.next.hour(hours),
+    day: lookup.next.day(days),
+    month: lookup.next.month(months),
+    weekday: lookup.next.weekday(weekdays)
   }
 
   o.prev = {
-    second: lookupTable(seconds, 60, "prev"),
-    minute: lookupTable(minutes, 60, "prev"),
-    hour: lookupTable(hours, 24, "prev"),
-    day: lookupTable(days, 32, "prev"),
-    month: lookupTable(months, 13, "prev"),
-    weekday: lookupTable(weekdays, 7, "prev")
+    second: lookup.prev.second(seconds),
+    minute: lookup.prev.minute(minutes),
+    hour: lookup.prev.hour(hours),
+    day: lookup.prev.day(days),
+    month: lookup.prev.month(months),
+    weekday: lookup.prev.weekday(weekdays)
   }
 
   return o
 }
 
-const lookupTable = (
-  values: ReadonlyArray<number>,
+const makeRestrictions = (
+  field: string,
+  min: number,
+  max: number,
+  normalize: (value: number) => number = (value) => value
+): (values: Iterable<number>) => Set<number> =>
+(values) => {
+  const restrictions: Array<number> = []
+  for (const value of values) {
+    if (!Number.isInteger(value) || value < min || value > max) {
+      throw new RangeError(`${field} must contain only integers between ${min} and ${max}`)
+    }
+    restrictions.push(normalize(value))
+  }
+  return new Set(Arr.sort(restrictions, N.Order))
+}
+
+const restrictions = {
+  seconds: makeRestrictions("seconds", 0, 59),
+  minutes: makeRestrictions("minutes", 0, 59),
+  hours: makeRestrictions("hours", 0, 23),
+  days: makeRestrictions("days", 1, 31),
+  months: makeRestrictions("months", 1, 12),
+  weekdays: makeRestrictions("weekdays", 0, 7, (value) => value === 7 ? 0 : value)
+}
+
+const makeLookupTable = (
   size: number,
   dir: "next" | "prev"
-): Array<number | undefined> => {
+): (values: ReadonlyArray<number>) => Array<number | undefined> =>
+(values) => {
   const result = new Array(size).fill(undefined)
   if (values.length === 0) {
     return result
@@ -449,6 +477,25 @@ const lookupTable = (
   }
 
   return result
+}
+
+const lookup = {
+  prev: {
+    second: makeLookupTable(60, "prev"),
+    minute: makeLookupTable(60, "prev"),
+    hour: makeLookupTable(24, "prev"),
+    day: makeLookupTable(32, "prev"),
+    month: makeLookupTable(13, "prev"),
+    weekday: makeLookupTable(7, "prev")
+  },
+  next: {
+    second: makeLookupTable(60, "next"),
+    minute: makeLookupTable(60, "next"),
+    hour: makeLookupTable(24, "next"),
+    day: makeLookupTable(32, "next"),
+    month: makeLookupTable(13, "next"),
+    weekday: makeLookupTable(7, "next")
+  }
 }
 
 const CronParseErrorTypeId = "~effect/time/Cron/CronParseError"
