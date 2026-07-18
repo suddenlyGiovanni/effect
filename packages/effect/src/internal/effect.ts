@@ -512,7 +512,6 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
     this.setContext(context)
     this.id = ++fiberIdStore.id
     this.currentOpCount = 0
-    this.currentLoopCount = 0
     this.interruptible = interruptible
     this._stack = []
     this._observers = []
@@ -520,6 +519,8 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
     this._children = undefined
     this._interruptedCause = undefined
     this._yielded = undefined
+    this._running = false
+    this._deferredInterrupt = false
     this.runtimeMetrics?.recordFiberStart(this.context)
   }
 
@@ -528,7 +529,6 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
   readonly id: number
   interruptible: boolean
   currentOpCount: number
-  currentLoopCount: number
   readonly _stack: Array<Primitive>
   readonly _observers: Array<(exit: Exit.Exit<A, E>) => void>
   _exit: Exit.Exit<A, E> | undefined
@@ -536,6 +536,8 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
   _children: Set<FiberImpl<any, any>> | undefined
   _interruptedCause: Cause.Cause<never> | undefined
   _yielded: Exit.Exit<any, any> | (() => void) | undefined
+  _running: boolean
+  _deferredInterrupt: boolean
 
   // set in setContext
   context!: Context.Context<never>
@@ -585,7 +587,11 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
       ? causeCombine(this._interruptedCause, cause)
       : cause
     if (this.interruptible) {
-      this.evaluate(failCause(this._interruptedCause) as any)
+      if (this._running) {
+        this._deferredInterrupt = true
+      } else {
+        this.evaluate(failCause(this._interruptedCause) as any)
+      }
     }
   }
   pollUnsafe(): Exit.Exit<A, E> | undefined {
@@ -621,12 +627,17 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
   runLoop(effect: Primitive): Exit.Exit<A, E> | Yield {
     const prevFiber = (globalThis as any)[currentFiberTypeId]
     ;(globalThis as any)[currentFiberTypeId] = this
+    const prevRunning = this._running
+    this._running = true
     let yielding = false
     let current: Primitive | Yield = effect
     this.currentOpCount = 0
-    const currentLoop = ++this.currentLoopCount
     try {
       while (true) {
+        if (this._deferredInterrupt) {
+          this._deferredInterrupt = false
+          current = failCause(this._interruptedCause!) as any
+        }
         this.currentOpCount++
         if (
           !yielding &&
@@ -640,14 +651,16 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
         current = this.currentTracerContext
           ? this.currentTracerContext(current as any, this)
           : (current as any)[evaluate](this)
-        if (currentLoop !== this.currentLoopCount) {
-          // another effect has taken over the loop,
-          return Yield
-        } else if (current === Yield) {
+        if (current === Yield) {
           const yielded = this._yielded!
           if (ExitTypeId in yielded) {
+            this._deferredInterrupt = false
             this._yielded = undefined
             return yielded
+          } else if (this._deferredInterrupt) {
+            this._yielded = undefined
+            yielded()
+            continue
           }
           return Yield
         }
@@ -658,6 +671,7 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
       }
       return this.runLoop(exitDie(error) as any)
     } finally {
+      this._running = prevRunning
       ;(globalThis as any)[currentFiberTypeId] = prevFiber
     }
   }
@@ -665,6 +679,10 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
     | (Primitive & Record<S, (value: any, fiber: FiberImpl) => Primitive>)
     | undefined
   {
+    if (this._deferredInterrupt) {
+      this._deferredInterrupt = false
+      return deferredInterruptCont
+    }
     while (true) {
       const op = this._stack.pop()
       if (!op) return undefined
@@ -705,6 +723,15 @@ export class FiberImpl<A = any, E = any> implements Fiber.Fiber<A, E> {
   }
   get currentSpanLocal(): Tracer.Span | undefined {
     return this.currentSpan?._tag === "Span" ? this.currentSpan : undefined
+  }
+}
+
+const deferredInterruptCont: any = {
+  [contA](_value: unknown, fiber: FiberImpl) {
+    return failCause(fiber._interruptedCause!)
+  },
+  [contE](_cause: unknown, fiber: FiberImpl) {
+    return failCause(fiber._interruptedCause!)
   }
 }
 

@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { Effect, Exit, Fiber, Latch, Scope } from "effect"
+import { Effect, Exit, Fiber, Latch } from "effect"
 
 describe("Fiber", () => {
   it("is a fiber", async () => {
@@ -58,12 +58,9 @@ describe("Fiber", () => {
     "delivers a synchronous self-interrupt instead of completing to success",
     () =>
       Effect.gen(function*() {
-        const closedScope = yield* Scope.make()
-        yield* Scope.close(closedScope, Exit.void)
-
         const child = yield* Effect.gen(function*() {
           const self = Fiber.getCurrent()!
-          Fiber.runIn(self, closedScope)
+          self.interruptUnsafe()
           return 42
         }).pipe(Effect.forkChild({ startImmediately: true }))
 
@@ -71,4 +68,35 @@ describe("Fiber", () => {
         assert.isTrue(Exit.hasInterrupts(exit))
       })
   )
+
+  it.effect("runs an async interrupt finalizer exactly once, in order", () =>
+    Effect.gen(function*() {
+      const events: Array<string> = []
+
+      const child = yield* Effect.gen(function*() {
+        const self = Fiber.getCurrent()!
+        yield* Effect.suspend(() => {
+          self.interruptUnsafe()
+          events.push("acquired")
+          return Effect.void
+        }).pipe(
+          Effect.onInterrupt(() =>
+            Effect.sync(() => {
+              events.push("finalizer-start")
+            }).pipe(
+              Effect.tap(Effect.yieldNow),
+              Effect.tap(Effect.sync(() => {
+                events.push("finalizer-end")
+              }))
+            )
+          )
+        )
+        events.push("unreachable")
+      }).pipe(Effect.forkChild({ startImmediately: true }))
+
+      const exit = yield* Fiber.await(child)
+      events.push("awaited")
+      assert.isTrue(Exit.hasInterrupts(exit))
+      assert.deepStrictEqual(events, ["acquired", "finalizer-start", "finalizer-end", "awaited"])
+    }))
 })
