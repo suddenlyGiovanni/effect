@@ -689,6 +689,57 @@ describe("Effect", () => {
       }))
   })
 
+  describe("reduce", () => {
+    it.effect("runs sequentially from left to right and passes the index", () =>
+      Effect.gen(function*() {
+        const visited: Array<string> = []
+        const result = yield* Effect.reduce([1, 2, 3, 4, 5], () => 0, (acc, value, index) =>
+          Effect.sync(() => {
+            visited.push(`${index}:${value}`)
+            return acc + value
+          }))
+
+        assert.strictEqual(result, 15)
+        assert.deepStrictEqual(visited, ["0:1", "1:2", "2:3", "3:4", "4:5"])
+      }))
+
+    it.effect("stops at the first failure", () =>
+      Effect.gen(function*() {
+        const visited: Array<number> = []
+        const result = yield* pipe(
+          [1, 2, 3, 4, 5],
+          Effect.reduce(() => 0, (acc, value) =>
+            Effect.sync(() => visited.push(value)).pipe(
+              Effect.andThen(value === 3 ? Effect.fail("fail") : Effect.succeed(acc + value))
+            )),
+          Effect.exit
+        )
+
+        assert.deepStrictEqual(result, Exit.fail("fail"))
+        assert.deepStrictEqual(visited, [1, 2, 3])
+      }))
+
+    it.effect("returns zero for an empty iterable", () =>
+      Effect.gen(function*() {
+        const result = yield* Effect.reduce([], () => 42, (acc, value: number) => Effect.succeed(acc + value))
+        assert.strictEqual(result, 42)
+      }))
+
+    it.effect("evaluates zero lazily for each run", () =>
+      Effect.gen(function*() {
+        let evaluations = 0
+        const reduced = Effect.reduce([1], () => {
+          evaluations++
+          return [] as Array<number>
+        }, (acc, value) => Effect.succeed([...acc, value]))
+
+        assert.strictEqual(evaluations, 0)
+        assert.deepStrictEqual(yield* reduced, [1])
+        assert.deepStrictEqual(yield* reduced, [1])
+        assert.strictEqual(evaluations, 2)
+      }))
+  })
+
   describe("validate", () => {
     it.effect("collects successes when all effects succeed", () =>
       Effect.gen(function*() {
