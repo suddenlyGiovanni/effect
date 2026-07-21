@@ -1,5 +1,5 @@
 ---
-"@effect/cluster": patch
+"effect": patch
 ---
 
 Don’t create a table when it’s not needed
