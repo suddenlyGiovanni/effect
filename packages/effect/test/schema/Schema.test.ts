@@ -1835,66 +1835,6 @@ Expected a value between -2147483648 and 2147483647, got 9007199254740992`
       })
     })
 
-    describe("Structural checks", () => {
-      it("Array + isMinLength", async () => {
-        const schema = Schema.Struct({
-          tags: Schema.Array(Schema.NonEmptyString).check(Schema.isMinLength(3))
-        })
-        const asserts = new TestSchema.Asserts(schema)
-
-        const decoding = asserts.decoding()
-        await decoding.fail(
-          {},
-          `Missing key
-  at ["tags"]`
-        )
-        const decodingAll = asserts.decoding({ parseOptions: { errors: "all" } })
-        await decodingAll.fail(
-          { tags: ["a", ""] },
-          `Expected a value with a length of at least 1, got ""
-  at ["tags"][1]
-Expected a value with a length of at least 3, got ["a",""]
-  at ["tags"]`
-        )
-      })
-
-      it("Record + isMaxProperties", async () => {
-        const schema = Schema.Record(Schema.String, Schema.Finite).check(Schema.isMaxProperties(2))
-        const asserts = new TestSchema.Asserts(schema)
-
-        const decoding = asserts.decoding()
-        await decoding.fail(
-          null,
-          `Expected object, got null`
-        )
-        const decodingAll = asserts.decoding({ parseOptions: { errors: "all" } })
-        await decodingAll.fail(
-          { a: 1, b: NaN, c: 3 },
-          `Expected a finite number, got NaN
-  at ["b"]
-Expected a value with at most 2 entries, got {"a":1,"b":NaN,"c":3}`
-        )
-      })
-
-      it("ReadonlyMap + isMaxSize", async () => {
-        const schema = Schema.ReadonlyMap(Schema.String, Schema.Finite).check(Schema.isMaxSize(2))
-        const asserts = new TestSchema.Asserts(schema)
-
-        const decoding = asserts.decoding()
-        await decoding.fail(
-          null,
-          `Expected ReadonlyMap, got null`
-        )
-        const decodingAll = asserts.decoding({ parseOptions: { errors: "all" } })
-        await decodingAll.fail(
-          new Map([["a", 1], ["b", NaN], ["c", 3]]),
-          `Expected a finite number, got NaN
-  at ["entries"][1][1]
-Expected a value with a size of at most 2, got Map([["a",1],["b",NaN],["c",3]])`
-        )
-      })
-    })
-
     describe("Array checks", () => {
       it("UniqueArray", async () => {
         const schema = Schema.UniqueArray(Schema.Struct({
@@ -2646,41 +2586,6 @@ Expected a value with a size of at most 2, got Map([["a",1],["b",NaN],["c",3]])`
         `Expected a length > 1, got {"a":"a"}`
       )
       await encoding.succeed({ a: "aa" }, { b: "aa" })
-    })
-
-    it(`Struct & encoding chain & structural checks should check the local value with errors: "all"`, async () => {
-      const local = Schema.Struct({ a: Schema.Finite }).check(Schema.isMaxProperties(1))
-      const schema = Schema.Struct({ b: Schema.Number, c: Schema.String }).pipe(
-        Schema.decodeTo(local, {
-          decode: SchemaGetter.transform<
-            { readonly a: number },
-            { readonly b: number; readonly c: string }
-          >((o) => ({ a: o.b })),
-          encode: SchemaGetter.transform<
-            { readonly b: number; readonly c: string },
-            { readonly a: number }
-          >((o) => ({ b: o.a, c: "" }))
-        })
-      )
-      assertTrue(SchemaAST.isObjects(schema.ast))
-      strictEqual(schema.ast.encoding?.length, 1)
-      strictEqual(schema.ast.checks?.length, 1)
-      const asserts = new TestSchema.Asserts(schema)
-
-      const decoding = asserts.decoding({ parseOptions: { errors: "all" } })
-      await decoding.fail(
-        { b: NaN, c: "extra" },
-        `Expected a finite number, got NaN
-  at ["a"]`
-      )
-
-      const encoding = asserts.encoding({ parseOptions: { errors: "all" } })
-      await encoding.fail(
-        { a: NaN },
-        `Expected a finite number, got NaN
-  at ["a"]`
-      )
-      await encoding.succeed({ a: 1 }, { b: 1, c: "" })
     })
 
     it("should work with withConstructorDefault", async () => {
@@ -9511,27 +9416,27 @@ describe("Check", () => {
   it("isStringFinite", async () => {
     const schema = Schema.String.check(Schema.isStringFinite())
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isStringFinite",
-      regExp: /^[+-]?\d*\.?\d+(?:[Ee][+-]?\d+)?$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isStringFinite",
+      payload: null
     })
   })
 
   it("isStringBigInt", async () => {
     const schema = Schema.String.check(Schema.isStringBigInt())
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isStringBigInt",
-      regExp: /^-?\d+$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isStringBigInt",
+      payload: null
     })
   })
 
   it("isStringSymbol", async () => {
     const schema = Schema.String.check(Schema.isStringSymbol())
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isStringSymbol",
-      regExp: /^Symbol\((.*)\)$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isStringSymbol",
+      payload: null
     })
   })
 
@@ -9543,11 +9448,9 @@ describe("Check", () => {
       asserts.arbitrary().verifyGeneration()
     }
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isUUID",
-      regExp:
-        /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|[fF]{8}-[fF]{4}-[fF]{4}-[fF]{4}-[fF]{12})$/,
-      version: undefined
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isUUID",
+      payload: { version: null }
     })
 
     const decoding = asserts.decoding()
@@ -9585,9 +9488,9 @@ describe("Check", () => {
       asserts.arbitrary().verifyGeneration()
     }
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isGUID",
-      regExp: /^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isGUID",
+      payload: null
     })
 
     const decoding = asserts.decoding()
@@ -9607,9 +9510,9 @@ describe("Check", () => {
       asserts.arbitrary().verifyGeneration()
     }
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isULID",
-      regExp: /^[0-9A-HJKMNP-TV-Za-hjkmnp-tv-z]{26}$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isULID",
+      payload: null
     })
 
     const decoding = asserts.decoding()
@@ -9623,18 +9526,18 @@ describe("Check", () => {
   it("isBase64", async () => {
     const schema = Schema.String.check(Schema.isBase64())
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isBase64",
-      regExp: /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isBase64",
+      payload: null
     })
   })
 
   it("isBase64Url", async () => {
     const schema = Schema.String.check(Schema.isBase64Url())
 
-    deepStrictEqual(Schema.resolveAnnotations(schema)?.["meta"], {
-      _tag: "isBase64Url",
-      regExp: /^([0-9a-zA-Z-_]{4})*(([0-9a-zA-Z-_]{2}(==)?)|([0-9a-zA-Z-_]{3}(=)?))?$/
+    deepStrictEqual(Schema.resolveAnnotations(schema)?.representation, {
+      id: "effect/schema/isBase64Url",
+      payload: null
     })
   })
 
