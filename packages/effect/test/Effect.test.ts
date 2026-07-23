@@ -64,7 +64,24 @@ describe("Effect", () => {
   })
 
   describe("tracing", () => {
-    it.effect("failCause captures stack frame", () =>
+    it("terminal root failure captures stack frame", () => {
+      const frame: References.StackFrame = {
+        name: "root frame",
+        stack: () => undefined,
+        parent: undefined
+      }
+      const failure = Exit.fail("boom")
+      const exit = Effect.runForkWith(Context.make(References.CurrentStackFrame, frame))(failure).pollUnsafe()
+
+      assert.isDefined(exit)
+      assert.isTrue(Exit.isFailure(exit!))
+      if (Exit.isFailure(exit!)) {
+        const trace = Context.getOrUndefined(Cause.annotations(exit.cause), Cause.StackTrace)
+        assert.strictEqual(trace, frame)
+      }
+    })
+
+    it.effect("caught sandboxed failure captures stack frame", () =>
       Effect.gen(function*() {
         const cause = yield* Effect.failCause(Cause.die(new Error("boom"))).pipe(
           Effect.withSpan("test span"),
@@ -75,6 +92,17 @@ describe("Effect", () => {
         const trace = Context.getUnsafe(annotations, Cause.StackTrace)
         assert.strictEqual(trace.name, "test span")
       }))
+
+    it("failure without a current frame has no stack annotation and reuses the original exit", () => {
+      const failure = Exit.fail("boom")
+      const exit = Effect.runFork(failure).pollUnsafe()
+
+      assert.strictEqual(exit, failure)
+      assert.isTrue(Exit.isFailure(exit!))
+      if (Exit.isFailure(exit!)) {
+        assert.isUndefined(Context.getOrUndefined(Cause.annotations(exit.cause), Cause.StackTrace))
+      }
+    })
   })
 
   it("callback can branch over sync/async", async () => {
@@ -530,6 +558,62 @@ describe("Effect", () => {
         const result = yield* Fiber.await(handle)
         assert.deepStrictEqual(result, Exit.fail("error"))
         assert.deepStrictEqual(done, [1, 2, 3])
+      }))
+
+    it.effect("interrupts started workers when the mapper throws during initial pumping", () =>
+      Effect.gen(function*() {
+        const interruptStarted = yield* Deferred.make<void>()
+        const interruptFinished = yield* Deferred.make<void>()
+        const defect = new Error("mapper defect")
+        const fiber = yield* Effect.forEach([0, 1], (i) => {
+          if (i === 0) {
+            return Effect.never.pipe(
+              Effect.onInterrupt(() =>
+                Deferred.succeed(interruptStarted, void 0).pipe(
+                  Effect.andThen(Deferred.await(interruptFinished))
+                )
+              )
+            )
+          }
+          throw defect
+        }, { concurrency: 2 }).pipe(Effect.forkChild({ startImmediately: true }))
+
+        assert.isTrue(yield* Deferred.isDone(interruptStarted))
+        assert.isUndefined(fiber.pollUnsafe())
+        yield* Deferred.succeed(interruptFinished, void 0)
+        const exit = fiber.pollUnsafe()
+        assert.isDefined(exit)
+        assertExitDefect(exit!, defect)
+      }))
+
+    it.effect("interrupts started workers when observer-driven refill throws", () =>
+      Effect.gen(function*() {
+        const release = yield* Deferred.make<void>()
+        const interruptStarted = yield* Deferred.make<void>()
+        const interruptFinished = yield* Deferred.make<void>()
+        const defect = new Error("refill defect")
+        const fiber = yield* Effect.forEach([0, 1, 2], (i) => {
+          if (i === 0) return Deferred.await(release)
+          if (i === 1) {
+            return Effect.never.pipe(
+              Effect.onInterrupt(() =>
+                Deferred.succeed(interruptStarted, void 0).pipe(
+                  Effect.andThen(Deferred.await(interruptFinished))
+                )
+              )
+            )
+          }
+          throw defect
+        }, { concurrency: 2 }).pipe(Effect.forkChild({ startImmediately: true }))
+
+        assert.isUndefined(fiber.pollUnsafe())
+        yield* Deferred.succeed(release, void 0)
+        assert.isTrue(yield* Deferred.isDone(interruptStarted))
+        assert.isUndefined(fiber.pollUnsafe())
+        yield* Deferred.succeed(interruptFinished, void 0)
+        const exit = fiber.pollUnsafe()
+        assert.isDefined(exit)
+        assertExitDefect(exit!, defect)
       }))
 
     it("length = 0", () =>
@@ -1485,6 +1569,12 @@ describe("Effect", () => {
   })
 
   describe("awaitAllChildren", () => {
+    it.effect("completes immediately when no children are forked", () =>
+      Effect.gen(function*() {
+        const result = yield* Effect.succeed(1).pipe(Effect.awaitAllChildren)
+        assert.strictEqual(result, 1)
+      }))
+
     it.effect("awaits children forked by the wrapped effect", () =>
       Effect.gen(function*() {
         const latch = yield* Deferred.make<void>()
@@ -1511,6 +1601,14 @@ describe("Effect", () => {
         )
         yield* Effect.yieldNow
         assert.deepStrictEqual(fiber.pollUnsafe(), Exit.succeed(1))
+        yield* Fiber.interrupt(preexisting)
+      }))
+
+    it.effect("does not await preexisting children", () =>
+      Effect.gen(function*() {
+        const preexisting = yield* Effect.never.pipe(Effect.forkChild({ startImmediately: true }))
+        const result = yield* Effect.succeed(1).pipe(Effect.awaitAllChildren)
+        assert.strictEqual(result, 1)
         yield* Fiber.interrupt(preexisting)
       }))
 

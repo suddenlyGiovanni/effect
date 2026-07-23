@@ -1,5 +1,5 @@
 import { assert, describe, it } from "@effect/vitest"
-import { Effect, Exit, Fiber, Latch } from "effect"
+import { Cause, Context, Effect, Exit, Fiber, Latch, References } from "effect"
 
 describe("Fiber", () => {
   it("is a fiber", async () => {
@@ -93,6 +93,80 @@ describe("Fiber", () => {
         assert.isTrue(Exit.hasInterrupts(exit))
       })
   )
+
+  it.effect("retains distinct target and interruptor stack frames", () =>
+    Effect.gen(function*() {
+      const targetFrame: References.StackFrame = {
+        name: "target-frame",
+        stack: () => "at target-call-site.ts:1:1",
+        parent: undefined
+      }
+      const interruptorFrame: References.StackFrame = {
+        name: "interruptor-frame",
+        stack: () => "at interruptor-call-site.ts:2:2",
+        parent: undefined
+      }
+      const target = yield* Effect.never.pipe(
+        Effect.provideService(References.CurrentStackFrame, targetFrame),
+        Effect.forkChild({ startImmediately: true })
+      )
+
+      yield* Fiber.interrupt(target).pipe(
+        Effect.provideService(References.CurrentStackFrame, interruptorFrame)
+      )
+
+      const exit = yield* Fiber.await(target)
+      if (exit._tag !== "Failure") {
+        return assert.fail("expected interrupted fiber to exit with failure")
+      }
+      const annotations = Cause.reasonAnnotations(exit.cause.reasons[0])
+      assert.strictEqual(Context.getUnsafe(annotations, Cause.StackTrace), targetFrame)
+      assert.strictEqual(Context.getUnsafe(annotations, Cause.InterruptorStackTrace), interruptorFrame)
+      assert.isTrue(Cause.pretty(exit.cause).includes("interruptor-call-site.ts:2:2"))
+    }))
+
+  it.effect("delivers a pending interrupt when interruptibleMask restores interruptibility", () =>
+    Effect.gen(function*() {
+      const masked = yield* Latch.make()
+      const resume = yield* Latch.make()
+      const events: Array<string> = []
+
+      const child = yield* Effect.uninterruptible(
+        Effect.gen(function*() {
+          yield* masked.open
+          yield* resume.await
+          return yield* Effect.interruptibleMask(() => {
+            events.push("interruptibleMask")
+            return Effect.never
+          })
+        })
+      ).pipe(Effect.forkChild({ startImmediately: true }))
+
+      yield* masked.await
+      events.push("masked")
+
+      yield* Effect.sync(() => {
+        child.interruptUnsafe(123)
+        events.push("interrupted")
+      })
+      assert.isUndefined(child.pollUnsafe())
+
+      yield* resume.open
+      events.push("resumed")
+      yield* Effect.yieldNow
+      yield* Effect.yieldNow
+
+      const exit = child.pollUnsafe()
+      if (exit === undefined) {
+        assert.fail("fiber did not exit after interruptibleMask restored interruptibility")
+      }
+      assert.isTrue(Exit.hasInterrupts(exit))
+      if (exit._tag !== "Failure") {
+        assert.fail("expected interrupted fiber to exit with failure")
+      }
+      assert.deepStrictEqual(Cause.interruptors(exit.cause), new Set([123]))
+      assert.deepStrictEqual(events, ["masked", "interrupted", "resumed", "interruptibleMask"])
+    }))
 
   it.effect("runs an async interrupt finalizer exactly once, in order", () =>
     Effect.gen(function*() {
