@@ -3336,6 +3336,21 @@ Expected a value between -2147483648 and 2147483647, got 9007199254740992`
       strictEqual((schema as any)["__proto__"], value)
     })
 
+    it("preserves name and length as options", () => {
+      const schema = Schema.make<Schema.String>(Schema.String.ast, {
+        name: "CustomSchema",
+        length: 2
+      })
+
+      strictEqual((schema as any).name, "CustomSchema")
+      strictEqual((schema as any).length, 2)
+
+      const rebuilt = schema.annotate({})
+
+      strictEqual((rebuilt as any).name, "CustomSchema")
+      strictEqual((rebuilt as any).length, 2)
+    })
+
     it("should throw an error when the cause contains both a schema issue and a defect", () => {
       const cause = Cause.combine(
         Cause.fail(new Schema.SchemaError(new SchemaIssue.InvalidValue(Option.some("a"), { message: "schema issue" }))),
@@ -5085,6 +5100,12 @@ Expected a value between -2147483648 and 2147483647, got 9007199254740992`
   })
 
   describe("Opaque", () => {
+    it("returns the original schema", () => {
+      const schema = Schema.Struct({ a: Schema.String })
+
+      strictEqual(Schema.Opaque<{ readonly a: string }>()(schema), schema)
+    })
+
     it("Struct", () => {
       class A extends Schema.Opaque<A>()(Schema.Struct({ a: Schema.String })) {}
 
@@ -9733,15 +9754,33 @@ Missing key
     )
   })
 
-  describe("asClass", () => {
+  describe("class extension", () => {
     it("wrapping a primitive schema", () => {
-      class A extends Schema.asClass(Schema.String) {}
+      class A extends Schema.String {}
 
       strictEqual(Schema.decodeUnknownSync(A)("a"), "a")
     })
 
+    it("inherits the schema protocol", () => {
+      class A extends Schema.String {}
+
+      assertTrue(Schema.isSchema(A))
+      strictEqual(A.make("a"), "a")
+
+      const annotated = A.annotate({ title: "A" })
+      assertTrue(Schema.isSchema(annotated))
+      strictEqual(Schema.resolveAnnotations(annotated)?.title, "A")
+    })
+
+    it("extending a rebuilt schema", () => {
+      class A extends Schema.Struct({ name: Schema.String }).annotate({ title: "A" }) {}
+
+      deepStrictEqual(Schema.decodeUnknownSync(A)({ name: "a" }), { name: "a" })
+      strictEqual(Schema.resolveAnnotations(A)?.title, "A")
+    })
+
     it("static getter using this", () => {
-      class A extends Schema.asClass(Schema.String) {
+      class A extends Schema.String {
         static get decodeUnknownSync() {
           return Schema.decodeUnknownSync(this)
         }
@@ -9751,7 +9790,7 @@ Missing key
     })
 
     it("static property", () => {
-      class A extends Schema.asClass(Schema.String) {
+      class A extends Schema.String {
         static readonly decodeUnknownSync = Schema.decodeUnknownSync(this)
       }
 
@@ -9759,7 +9798,7 @@ Missing key
     })
 
     it("static property using Schema.suspend", () => {
-      class A extends Schema.asClass(Schema.String) {
+      class A extends Schema.String {
         static readonly decodeUnknownSync = Schema.decodeUnknownSync(Schema.suspend(() => this))
       }
 
@@ -9770,7 +9809,7 @@ Missing key
       const struct = Schema.Struct({
         name: Schema.String
       })
-      class A extends Schema.asClass(struct) {
+      class A extends struct {
         static get decodeUnknownSync() {
           return Schema.decodeUnknownSync(this)
         }
@@ -9780,8 +9819,17 @@ Missing key
       strictEqual(A.fields, struct.fields)
     })
 
-    it("subclassing (double wrap)", () => {
-      class A extends Schema.asClass(Schema.FiniteFromString) {
+    it("does not create class instances", () => {
+      class A extends Schema.Struct({ name: Schema.String }) {}
+
+      const value = A.make({ name: "a" })
+
+      assertFalse(value instanceof A)
+      deepStrictEqual(value, { name: "a" })
+    })
+
+    it("subclassing", () => {
+      class A extends Schema.FiniteFromString {
         static get decodeUnknownSync() {
           return Schema.decodeUnknownSync(this)
         }
